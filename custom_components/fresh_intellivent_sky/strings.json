@@ -3,21 +3,24 @@
     "flow_title": "[%key:component::bluetooth::config::flow_title%]",
     "step": {
       "user": {
-        "description": "[%key:component::bluetooth::config::step::user::description%]",
+        "description": "Select device"
+      },
+      "auth": {
+        "description": "To be able to update values you need to provide an auth key.",
         "data": {
-          "address": "[%key:component::bluetooth::config::step::user::data::address%]"
+          "auth_key": "Auth key"
         }
       },
       "bluetooth_confirm": {
-        "description": "[%key:component::bluetooth::config::step::bluetooth_confirm::description%]"
+        "description": "Bluetooth Confirm Description"
       }
     },
     "abort": {
-      "no_devices_found": "[%key:common::config_flow::abort::no_devices_found%]",
-      "already_in_progress": "[%key:common::config_flow::abort::already_in_progress%]",
-      "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
-      "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]",
-      "unknown": "[%key:common::config_flow::error::unknown%]"
+      "no_devices_found": "No devices found",
+      "already_in_progress": "Already in progress",
+      "already_configured": "Already configured",
+      "cannot_connect": "Couldn't connect",
+      "unknown": "Unknown error"
     }
   }
 }

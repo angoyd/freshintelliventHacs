@@ -3,7 +3,7 @@
   "name": "Fresh Intellivent Sky",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/fresh_intellivent_sky",
-  "requirements": ["git+https://github.com/angoyd/pyfreshintellivent.git@ha-fixes#pyfreshintellivent==0.1.0"],
+  "requirements": ["pyfreshintellivent==0.1.0"],
   "codeowners": ["@LaStrada"],
   "iot_class": "local_polling",
   "loggers": ["bleak", "pyfreshintellivent"],
@@ -13,8 +13,7 @@
       "connectable": true,
       "local_name": "Intellivent SKY",
       "service_uuid": "0000180a-0000-1000-8000-00805f9b34fb"
-    }
-  ],
+    }],
   "issue_tracker": "https://github.com/angoyd/freshintelliventHacs/issues",
   "version": "0.1.1-alpha"
 }
