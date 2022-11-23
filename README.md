@@ -38,9 +38,9 @@ Using your HA configuration directory (folder) as a starting point you should no
 ***
 
 [fresh_intellivent_sky]: https://github.com/angoyd/freshintelliventHacs
-[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/angoyd/freshintelliventHacs.svg?style=for-the-badge
 [commits]: https://github.com/angoyd/freshintelliventHacs/commits/master
 [hacs]: https://github.com/custom-components/hacs
-[license-shield]: https://img.shields.io/github/license/custom-components/blueprint.svg?style=for-the-badge
-[releases-shield]: https://img.shields.io/github/release/custom-components/blueprint.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/angoyd/freshintelliventHacs.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/angoyd/freshintelliventHacs.svg?style=for-the-badge
 [releases]: https://github.com/angoyd/freshintelliventHacs/releases
