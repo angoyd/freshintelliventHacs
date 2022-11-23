@@ -1,4 +1,4 @@
 {
     "name": "Integration for Fresh Intellivent Sky (Bluetooth LE)",
-    "country": ["NO", "SE", "DK"]
+    "render_readme": true
   }
