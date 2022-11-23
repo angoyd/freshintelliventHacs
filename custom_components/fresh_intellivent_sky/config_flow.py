@@ -7,6 +7,7 @@ from typing import Any
 
 from bleak import BleakError
 from pyfreshintellivent import FreshIntelliVent
+from pyfreshintellivent.helpers import validated_authentication_code
 import voluptuous as vol
 
 from homeassistant.components import bluetooth
@@ -15,10 +16,10 @@ from homeassistant.components.bluetooth import (
     async_discovered_service_info,
 )
 from homeassistant.config_entries import ConfigFlow
-from homeassistant.const import CONF_ADDRESS, CONF_PASSWORD
+from homeassistant.const import CONF_ADDRESS
 from homeassistant.data_entry_flow import FlowResult
 
-from .const import DOMAIN, NAME
+from .const import CONF_AUTH_KEY, DOMAIN, NAME
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,29 +55,17 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
     async def _get_device_data(
         self, discovery_info: BluetoothServiceInfo
     ) -> FreshIntelliVent:
-        _LOGGER.debug("_get_device_data 1")
         ble_device = bluetooth.async_ble_device_from_address(
             self.hass, discovery_info.address
         )
-        _LOGGER.debug("_get_device_data 2")
         if ble_device is None:
-            _LOGGER.debug("no ble_device in _get_device_data")
             raise FreshIntelliventSkyDeviceUpdateError("No ble_device")
 
-        _LOGGER.debug("_get_device_data 3")
         device = FreshIntelliVent()
-        _LOGGER.debug("_get_device_data 4")
 
         try:
             async with device.connect(ble_device) as client:
-                _LOGGER.debug("_get_device_data 5")
-                await device.authenticate("CHANGEME")
-                await device.fetch_sensor_data()
-                if client.sensors.authenticated is False:
-                    raise FreshIntelliventSkyDeviceUpdateError(
-                        "Not authenticated. Wrong authentication code?"
-                    )
-                await device.fetch_device_information()
+                await client.fetch_device_information()
         except BleakError as err:
             _LOGGER.error(
                 "Error connecting to and getting data from %s: %s",
@@ -118,16 +107,14 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         """Confirm discovery."""
-        if user_input is not None:
-            return self.async_create_entry(
-                title=self.context["title_placeholders"]["name"], data={}
+        if user_input is None:
+            self._set_confirm_only()
+            return self.async_show_form(
+                step_id="bluetooth_confirm",
+                description_placeholders=self.context["title_placeholders"],
             )
 
-        self._set_confirm_only()
-        return self.async_show_form(
-            step_id="bluetooth_confirm",
-            description_placeholders=self.context["title_placeholders"],
-        )
+        return await self.async_step_auth()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -142,10 +129,9 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             self.context["title_placeholders"] = {
                 "name": discovery.name,
             }
-
             self._discovered_device = discovery
 
-            return self.async_create_entry(title=discovery.name, data={})
+            return await self.async_step_auth()
 
         current_addresses = self._async_current_ids()
         for discovery_info in async_discovered_service_info(self.hass):
@@ -175,9 +161,33 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_ADDRESS): vol.In(titles),
-                    vol.Required(CONF_PASSWORD): vol.In(titles),
-                },
+                {vol.Required(CONF_ADDRESS): vol.In(titles)},
             ),
+        )
+
+    async def async_step_auth(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Get auth key."""
+        errors = {}
+        if user_input is not None:
+            auth_key = user_input.get(CONF_AUTH_KEY)
+
+            try:
+                if auth_key is not None:
+                    validated_authentication_code(auth_key)
+            except (TypeError, ValueError) as err:
+                _LOGGER.debug(err)
+                errors["base"] = err
+            else:
+                return self.async_create_entry(
+                    title=self.context["title_placeholders"]["name"],
+                    data={CONF_AUTH_KEY: auth_key},
+                )
+
+        return self.async_show_form(
+            step_id="auth",
+            description_placeholders=self.context["title_placeholders"],
+            data_schema=vol.Schema({vol.Optional(CONF_AUTH_KEY): str}),
+            errors=errors,
         )

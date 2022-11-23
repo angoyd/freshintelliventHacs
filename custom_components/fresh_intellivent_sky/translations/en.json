@@ -17,6 +17,12 @@
                     "address": "Device"
                 },
                 "description": "Choose a device to setup"
+            },
+            "auth": {
+                "data": {
+                    "auth_key": "Auth key"
+                },
+                "description": "Optional auth key. Is needed to update parameters."
             }
         }
     }
