@@ -1,4 +1,4 @@
-# fresh_intellivent_sky
+# Fresh Intellivent Sky integration for Home Asssistant
 
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
