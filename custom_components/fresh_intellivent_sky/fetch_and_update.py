@@ -73,7 +73,7 @@ class FetchAndUpdate:
             _LOGGER.debug("Updated airing mode: %s", airing_mode)
             self._hass.data[AIRING_MODE_UPDATE] = None
         else:
-            self._client.fetch_airing()
+            await self._client.fetch_airing()
 
     async def _fetch_and_update_constant_speed(self):
         constant_speed = self._hass.data[CONSTANT_SPEED_UPDATE]
@@ -86,7 +86,7 @@ class FetchAndUpdate:
             _LOGGER.debug("Updated constant speed: %s", constant_speed)
             self._hass.data[CONSTANT_SPEED_UPDATE] = None
         else:
-            self._client.fetch_constant_speed()
+            await self._client.fetch_constant_speed()
 
     async def _fetch_and_update_humidity(self):
         humidity_mode = self._hass.data[HUMIDITY_MODE_UPDATE]
@@ -118,7 +118,7 @@ class FetchAndUpdate:
             _LOGGER.debug("Updated light and voc mode: %s", light_and_voc_mode)
             self._hass.data[LIGHT_AND_VOC_MODE_UPDATE] = None
         else:
-            self._client.fetch_light_and_voc()
+            await self._client.fetch_light_and_voc()
 
     async def _fetch_and_update_timer(self):
         timer_mode = self._hass.data[TIMER_MODE_UPDATE]
@@ -133,4 +133,4 @@ class FetchAndUpdate:
             _LOGGER.debug("Updated timer mode: %s", timer_mode)
             self._hass.data[TIMER_MODE_UPDATE] = None
         else:
-            self._client.fetch_timer()
+            await self._client.fetch_timer()
