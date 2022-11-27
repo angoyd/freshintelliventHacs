@@ -90,10 +90,13 @@ class FreshIntelliventSkySwitch(
     @property
     def is_on(self) -> bool:
         """Return the value reported by the sensor."""
+        if self._keys is None:
+            return None
         value = self.coordinator.data.modes
-        if self._keys is not None:
-            for key in self._keys:
-                value = value[key]
+        for key in self._keys:
+            if value.get(key) is None:
+                return None
+            value = value[key]
 
         return cast(bool, value)
 
