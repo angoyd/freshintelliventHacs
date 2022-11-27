@@ -39,7 +39,7 @@ class FetchAndUpdate:
         await self._fetch_and_update_timer()
 
     async def _update_boost(self):
-        boost = self._hass.data[BOOST_UPDATE]
+        boost = self._hass.data.get(BOOST_UPDATE)
 
         if boost is not None and self._is_authenticated is True:
             await self._client.update_boost(
@@ -51,7 +51,7 @@ class FetchAndUpdate:
             self._hass.data[BOOST_UPDATE] = None
 
     async def _update_pause(self):
-        pause = self._hass.data[PAUSE_UPDATE]
+        pause = self._hass.data.get(PAUSE_UPDATE)
 
         if pause is not None and self._is_authenticated is True:
             await self._client.update_pause(
@@ -62,7 +62,7 @@ class FetchAndUpdate:
             self._hass.data[PAUSE_UPDATE] = None
 
     async def _fetch_and_update_airing(self):
-        airing_mode = self._hass.data[AIRING_MODE_UPDATE]
+        airing_mode = self._hass.data.get(AIRING_MODE_UPDATE)
 
         if airing_mode is not None and self._is_authenticated is True:
             await self._client.update_airing(
@@ -76,7 +76,7 @@ class FetchAndUpdate:
             await self._client.fetch_airing()
 
     async def _fetch_and_update_constant_speed(self):
-        constant_speed = self._hass.data[CONSTANT_SPEED_UPDATE]
+        constant_speed = self._hass.data.get(CONSTANT_SPEED_UPDATE)
 
         if constant_speed is not None and self._is_authenticated is True:
             await self._client.update_constant_speed(
@@ -89,7 +89,7 @@ class FetchAndUpdate:
             await self._client.fetch_constant_speed()
 
     async def _fetch_and_update_humidity(self):
-        humidity_mode = self._hass.data[HUMIDITY_MODE_UPDATE]
+        humidity_mode = self._hass.data.get(HUMIDITY_MODE_UPDATE)
 
         if humidity_mode is not None and self._is_authenticated is True:
             await self._client.update_humidity(
@@ -103,7 +103,7 @@ class FetchAndUpdate:
             await self._client.fetch_humidity()
 
     async def _fetch_and_update_light_and_voc(self):
-        light_and_voc_mode = self._hass.data[LIGHT_AND_VOC_MODE_UPDATE]
+        light_and_voc_mode = self._hass.data.get(LIGHT_AND_VOC_MODE_UPDATE)
 
         if light_and_voc_mode is not None and self._is_authenticated is True:
             light = light_and_voc_mode["light"]
@@ -121,7 +121,7 @@ class FetchAndUpdate:
             await self._client.fetch_light_and_voc()
 
     async def _fetch_and_update_timer(self):
-        timer_mode = self._hass.data[TIMER_MODE_UPDATE]
+        timer_mode = self._hass.data.get(TIMER_MODE_UPDATE)
 
         if timer_mode is not None and self._is_authenticated is True:
             await self._client.update_timer(
