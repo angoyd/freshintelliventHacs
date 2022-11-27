@@ -82,7 +82,7 @@ async def async_setup_entry(
 
                 try:
                     updates = FetchAndUpdate(hass=hass, client=client)
-                    updates.update_all()
+                    await updates.update_all()
                 except FreshIntelliventTimeoutError as err:
                     # No important data here, just ignore and log it
                     _LOGGER.warning("Timeout while fetch/update modes: %s", err)

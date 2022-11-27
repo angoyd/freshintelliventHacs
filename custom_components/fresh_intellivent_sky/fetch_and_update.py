@@ -30,13 +30,13 @@ class FetchAndUpdate:
         self._is_authenticated = client.sensors.authenticated
     
     async def update_all(self):
-        self._update_boost()
-        self._update_pause()
-        self._fetch_and_update_airing()
-        self._fetch_and_update_constant_speed()
-        self._fetch_and_update_humidity()
-        self._fetch_and_update_light_and_voc()
-        self._fetch_and_update_timer()
+        await self._update_boost()
+        await self._update_pause()
+        await self._fetch_and_update_airing()
+        await self._fetch_and_update_constant_speed()
+        await self._fetch_and_update_humidity()
+        await self._fetch_and_update_light_and_voc()
+        await self._fetch_and_update_timer()
 
     async def _update_boost(self):
         boost = self._hass.data[BOOST_UPDATE]
