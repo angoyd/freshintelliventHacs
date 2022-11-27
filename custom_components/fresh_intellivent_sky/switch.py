@@ -67,10 +67,10 @@ class FreshIntelliventSkySwitch(
         super().__init__(coordinator)
         self.entity_description = entity_description
 
-        name = f"{device.name}"
+        name = f"{device.manufacturer} {device.name}"
 
         self.device = device
-        self._attr_unique_id = f"{name}_{entity_description.key}"
+        self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = entity_category
         self._keys = keys
         self._id = device.address

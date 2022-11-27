@@ -90,9 +90,9 @@ class FreshIntelliventSkySelect(
 
         self.device = device
 
-        name = f"{device.name}"
+        name = f"{device.manufacturer} {device.name}"
 
-        self._attr_unique_id = f"{name}_{entity_description.key}"
+        self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = EntityCategory.CONFIG
         self._keys = keys
         self._id = device.address
