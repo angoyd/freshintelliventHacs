@@ -123,7 +123,7 @@ class FreshIntelliventSkySelect(
             return None
         value = self.coordinator.data.modes
         for key in self._keys:
-            if self._keys is None:
+            if value.get(key) is None:
                 return None
             value = value[key]
 
