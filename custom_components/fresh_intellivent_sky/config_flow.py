@@ -3,23 +3,25 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-from typing import Any
+from typing import Any, Dict, cast
 
 from bleak import BleakError
 from pyfreshintellivent import FreshIntelliVent
 from pyfreshintellivent.helpers import validated_authentication_code
 import voluptuous as vol
+from voluptuous.validators import All, Range
 
 from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth import (
     BluetoothServiceInfo,
     async_discovered_service_info,
 )
-from homeassistant.config_entries import ConfigFlow
+from homeassistant.config_entries import ConfigFlow, ConfigEntry, OptionsFlow
 from homeassistant.const import CONF_ADDRESS
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.core import callback
 
-from .const import CONF_AUTH_KEY, DOMAIN, NAME
+from .const import CONF_AUTH_KEY, DOMAIN, NAME, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -190,4 +192,44 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             description_placeholders=self.context["title_placeholders"],
             data_schema=vol.Schema({vol.Optional(CONF_AUTH_KEY): str}),
             errors=errors,
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(
+        config_entry: ConfigEntry,
+    ) -> OptionsFlow:
+        """Create the options flow."""
+        return FreshIntelliventSkyOptionsFlowHandler(config_entry)
+
+
+class FreshIntelliventSkyOptionsFlowHandler(OptionsFlow):  # type: ignore[misc]
+    """Fresh Intellivent Sky options flow."""
+
+    def __init__(self, config_entry: ConfigEntry):
+        """Initialize a Fresh Intellivent Sky options flow."""
+        self._config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: dict[str, Any] | None = None
+    ) -> dict[str, Any]:
+        """Manage the options."""
+        if user_input is not None:
+            return cast(
+                Dict[str, Any], self.async_create_entry(title="", data=user_input)
+            )
+
+        schema: dict[Any, Any] = {
+            vol.Optional(
+                CONF_SCAN_INTERVAL,
+                default=self._config_entry.options.get(
+                    CONF_SCAN_INTERVAL,
+                    DEFAULT_SCAN_INTERVAL,
+                ),
+            ): All(int, Range(min=5)),
+        }
+
+        return cast(
+            Dict[str, Any],
+            self.async_show_form(step_id="init", data_schema=vol.Schema(schema)),
         )
