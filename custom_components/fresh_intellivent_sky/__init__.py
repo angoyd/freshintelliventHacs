@@ -74,7 +74,7 @@ async def async_setup_entry(
         fresh = FreshIntelliVent()
 
         try:
-            async with fresh.connect(ble_device) as client:
+            async with fresh.connect(ble_device, 30.0) as client:
                 if auth_key is not None:
                     await client.authenticate(authentication_code=auth_key)
                 await client.fetch_sensor_data()
