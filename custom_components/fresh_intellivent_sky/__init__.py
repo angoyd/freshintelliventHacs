@@ -27,6 +27,7 @@ from .const import (
     MINUTES_KEY,
     RPM_KEY,
     TIMER_MODE_UPDATE,
+    CONF_SCAN_INTERVAL,
 )
 
 
@@ -71,6 +72,10 @@ async def async_setup_entry(
 
     ble_device = bluetooth.async_ble_device_from_address(hass, address)
     auth_key = entry.data.get(CONF_AUTH_KEY)
+    scan_interval = entry.data.get(CONF_SCAN_INTERVAL)
+
+    if scan_interval is None:
+        scan_interval = DEFAULT_SCAN_INTERVAL
 
     if not ble_device:
         raise ConfigEntryNotReady(
@@ -199,7 +204,7 @@ async def async_setup_entry(
         _LOGGER,
         name=DOMAIN,
         update_method=_async_update_method,
-        update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
+        update_interval=timedelta(seconds=scan_interval),
     )
 
     await coordinator.async_config_entry_first_refresh()
