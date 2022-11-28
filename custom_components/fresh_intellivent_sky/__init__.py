@@ -72,7 +72,7 @@ async def async_setup_entry(
 
     ble_device = bluetooth.async_ble_device_from_address(hass, address)
     auth_key = entry.data.get(CONF_AUTH_KEY)
-    scan_interval = entry.data.get(CONF_SCAN_INTERVAL)
+    scan_interval = entry.options.get(CONF_SCAN_INTERVAL)
 
     if scan_interval is None:
         scan_interval = DEFAULT_SCAN_INTERVAL
