@@ -5,19 +5,16 @@ import dataclasses
 import logging
 from typing import Any
 
-from bleak import BleakError
-from pyfreshintellivent import FreshIntelliVent
-from pyfreshintellivent.helpers import validated_authentication_code
 import voluptuous as vol
-
+from bleak import BleakError
 from homeassistant.components import bluetooth
-from homeassistant.components.bluetooth import (
-    BluetoothServiceInfo,
-    async_discovered_service_info,
-)
+from homeassistant.components.bluetooth import (BluetoothServiceInfo,
+                                                async_discovered_service_info)
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.const import CONF_ADDRESS
 from homeassistant.data_entry_flow import FlowResult
+from pyfreshintellivent import FreshIntelliVent
+from pyfreshintellivent.helpers import validated_authentication_code
 
 from .const import CONF_AUTH_KEY, DOMAIN, NAME
 
@@ -64,7 +61,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         device = FreshIntelliVent()
 
         try:
-            async with device.connect(ble_device) as client:
+            async with device.connect(ble_device, 30.0) as client:
                 await client.fetch_device_information()
         except BleakError as err:
             _LOGGER.error(

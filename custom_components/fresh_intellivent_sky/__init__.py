@@ -11,9 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError
 from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
-from pyfreshintellivent import (FreshIntelliVent,
-                                FreshIntelliventError,
-                                FreshIntelliventTimeoutError)
+from pyfreshintellivent import FreshIntelliVent
 
 from .const import (AIRING_MODE_UPDATE, CONF_AUTH_KEY, CONSTANT_SPEED_UPDATE,
                     DEFAULT_SCAN_INTERVAL, DOMAIN, HUMIDITY_MODE_UPDATE,
@@ -44,6 +42,9 @@ READ_ONLY_PLATFORMS = [
     Platform.SENSOR,
 ]
 
+MAX_ATTEMPTS = 5
+TIMEOUT = 30.0
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -73,26 +74,24 @@ async def async_setup_entry(
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
         fresh = FreshIntelliVent()
 
-        try:
-            async with fresh.connect(ble_device, 30.0) as client:
-                if auth_key is not None:
-                    await client.authenticate(authentication_code=auth_key)
-                await client.fetch_sensor_data()
-                await client.fetch_device_information()
+        attempts = 0
+        while attempts < MAX_ATTEMPTS:
+            try:
+                async with fresh.connect(ble_device, TIMEOUT) as client:
+                    if auth_key is not None:
+                        await client.authenticate(authentication_code=auth_key)
+                    await client.fetch_sensor_data()
+                    await client.fetch_device_information()
 
-                try:
                     updates = FetchAndUpdate(hass=hass, client=client)
                     await updates.update_all()
-                except FreshIntelliventTimeoutError as err:
-                    # No important data here, just ignore and log it
-                    _LOGGER.warning("Timeout while fetch/update modes: %s", err)
-        
-                except FreshIntelliventError as err:
-                    _LOGGER.warning("Error while fetch/update modes: %s", err)
 
-        except Exception as err:  # pylint: disable=broad-except
-            _LOGGER.warning("Failed to fetch data: %s", err)
-            raise UpdateFailed(f"Unable to fetch data: {err}") from err
+            except Exception as err:  # pylint: disable=broad-except
+                _LOGGER.warning("Failed to fetch data: %s", err)
+                if attempts > MAX_ATTEMPTS:
+                    raise UpdateFailed(f"Unable to fetch data: {err}") from err
+                attempts += 1
+                _LOGGER.warning("Retry, attempt number %s / %s", attempts, MAX_ATTEMPTS)
 
         return fresh
 

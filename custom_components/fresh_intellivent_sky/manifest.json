@@ -3,7 +3,7 @@
   "name": "Fresh Intellivent Sky",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/fresh_intellivent_sky",
-  "requirements": ["pyfreshintellivent==0.1.2"],
+  "requirements": ["pyfreshintellivent==0.1.3"],
   "codeowners": ["@LaStrada"],
   "iot_class": "local_polling",
   "loggers": ["bleak", "pyfreshintellivent"],
