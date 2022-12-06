@@ -3,26 +3,21 @@ from __future__ import annotations
 
 import logging
 
-from pyfreshintellivent import FreshIntelliVent
-from pyfreshintellivent.helpers import DETECTION_HIGH, DETECTION_LOW, DETECTION_MEDIUM
-
-from homeassistant.components.select import SelectEntity, SelectEntityDescription
+from homeassistant.components.select import (SelectEntity,
+                                             SelectEntityDescription)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+from pyfreshintellivent import FreshIntelliVent
+from pyfreshintellivent.helpers import (DETECTION_HIGH, DETECTION_LOW,
+                                        DETECTION_MEDIUM)
 
-from .const import (
-    DETECTION_OFF,
-    DOMAIN,
-    HUMIDITY_MODE_UPDATE,
-    LIGHT_AND_VOC_MODE_UPDATE,
-)
+from .const import (DETECTION_OFF, DOMAIN, HUMIDITY_MODE_UPDATE,
+                    LIGHT_AND_VOC_MODE_UPDATE)
 
 _LOGGER = logging.getLogger(__name__)
 

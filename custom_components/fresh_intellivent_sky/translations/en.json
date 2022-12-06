@@ -25,5 +25,16 @@
                 "description": "Optional auth key. Is needed to update parameters."
             }
         }
-    }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title" : "Settings",
+                "description": "Options for fan",
+                "data" : {
+                    "scan_interval" : "Interval colleting status from fan (seconds)"
+                }
+            }
+        }
+      }
 }

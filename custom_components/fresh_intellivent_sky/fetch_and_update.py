@@ -1,20 +1,12 @@
+import logging
+
 from homeassistant.core import HomeAssistant
 from pyfreshintellivent import FreshIntelliVent
-import logging
-from .const import (
-    AIRING_MODE_UPDATE,
-    BOOST_UPDATE,
-    CONSTANT_SPEED_UPDATE,
-    DELAY_KEY,
-    DETECTION_KEY,
-    ENABLED_KEY,
-    HUMIDITY_MODE_UPDATE,
-    LIGHT_AND_VOC_MODE_UPDATE,
-    MINUTES_KEY,
-    RPM_KEY,
-    PAUSE_UPDATE,
-    TIMER_MODE_UPDATE,
-)
+
+from .const import (AIRING_MODE_UPDATE, BOOST_UPDATE, CONSTANT_SPEED_UPDATE,
+                    DELAY_KEY, DETECTION_KEY, ENABLED_KEY,
+                    HUMIDITY_MODE_UPDATE, LIGHT_AND_VOC_MODE_UPDATE,
+                    MINUTES_KEY, PAUSE_UPDATE, RPM_KEY, TIMER_MODE_UPDATE)
 
 UPDATE_NEEDED = "update_needed"
 UPDATE_DONE = "update_done"
@@ -28,7 +20,7 @@ class FetchAndUpdate:
         self._client = client
 
         self._is_authenticated = client.sensors.authenticated
-    
+
     async def update_all(self):
         await self._update_boost()
         await self._update_pause()
@@ -45,7 +37,7 @@ class FetchAndUpdate:
             await self._client.update_boost(
                 enabled=boost[ENABLED_KEY],
                 rpm=boost[RPM_KEY],
-                seconds=boost[MINUTES_KEY]
+                seconds=boost[MINUTES_KEY],
             )
             _LOGGER.debug("Updated constant speed")
             self._hass.data[BOOST_UPDATE] = None

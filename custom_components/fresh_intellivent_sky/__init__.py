@@ -13,9 +13,10 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 from pyfreshintellivent import FreshIntelliVent
 
-from .const import (AIRING_MODE_UPDATE, CONF_AUTH_KEY, CONSTANT_SPEED_UPDATE,
-                    DEFAULT_SCAN_INTERVAL, DOMAIN, HUMIDITY_MODE_UPDATE,
-                    LIGHT_AND_VOC_MODE_UPDATE, TIMER_MODE_UPDATE)
+from .const import (AIRING_MODE_UPDATE, CONF_AUTH_KEY, CONF_SCAN_INTERVAL,
+                    CONSTANT_SPEED_UPDATE, DEFAULT_SCAN_INTERVAL, DOMAIN,
+                    HUMIDITY_MODE_UPDATE, LIGHT_AND_VOC_MODE_UPDATE,
+                    TIMER_MODE_UPDATE)
 from .fetch_and_update import FetchAndUpdate
 
 
@@ -63,6 +64,10 @@ async def async_setup_entry(
 
     ble_device = bluetooth.async_ble_device_from_address(hass, address)
     auth_key = entry.data.get(CONF_AUTH_KEY)
+    scan_interval = entry.options.get(CONF_SCAN_INTERVAL)
+
+    if scan_interval is None:
+        scan_interval = DEFAULT_SCAN_INTERVAL
 
     if not ble_device:
         raise ConfigEntryNotReady(
@@ -100,7 +105,7 @@ async def async_setup_entry(
         _LOGGER,
         name=DOMAIN,
         update_method=_async_update_method,
-        update_interval=timedelta(seconds=DEFAULT_SCAN_INTERVAL),
+        update_interval=timedelta(seconds=scan_interval),
     )
 
     await coordinator.async_config_entry_first_refresh()

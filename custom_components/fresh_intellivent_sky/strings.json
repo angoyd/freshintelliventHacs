@@ -22,5 +22,16 @@
       "cannot_connect": "Couldn't connect",
       "unknown": "Unknown error"
     }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "description": "Options for fan",
+        "data": {
+          "scan_interval" : "Interval colleting status from fan (seconds)"
+        }
+      }
+    }
   }
 }

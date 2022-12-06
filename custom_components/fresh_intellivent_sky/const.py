@@ -9,6 +9,7 @@ DISPATCH_DETECTION = f"{DOMAIN}.detection"
 DEFAULT_SCAN_INTERVAL = 120
 
 CONF_AUTH_KEY = "auth_key"
+CONF_SCAN_INTERVAL = "scan_interval"
 
 DETECTION_OFF = "Off"
 

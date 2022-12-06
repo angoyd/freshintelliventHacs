@@ -15,5 +15,5 @@
       "service_uuid": "0000180a-0000-1000-8000-00805f9b34fb"
     }],
   "issue_tracker": "https://github.com/angoyd/freshintelliventHacs/issues",
-  "version": "0.1.1-alpha"
+  "version": "0.1.0-rc.2"
 }
