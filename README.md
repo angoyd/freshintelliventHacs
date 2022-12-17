@@ -10,7 +10,7 @@ _Component to integrate with [fresh_intellivent_sky][fresh_intellivent_sky]._
 
 **This component will set up the following platforms.**
 
-Note! This component is in a very eardly stage so breaking changes and bugs are to be expected.
+Note! This component is in a very early stage so breaking changes and bugs are to be expected.
 
 Platform | Description
 -- | --
@@ -18,7 +18,21 @@ Platform | Description
 `sensor` | Show info from blueprint API.
 `switch` | Switch something `True` or `False`.
 
-## Installation
+## HACS Installation
+
+1. Go to HACS in Home Assistant
+2. Click on integrations
+3. In top right corner, click three dots, click 'Custom repositories'
+4. Paste this repository URL (https://github.com/angoyd/freshintelliventHacs) in repository box
+5. Choose integration in category box
+6. Click add, wait while repository is added, close window
+7. Click the new repository, and click download
+8. Restart Home Assistant
+9. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Fresh Intellivent Sky"
+10. The integration will scan for fans and then ask for your authcode. (Todo how to get authcode)
+
+
+## Manual Installation
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 2. If you do not have a `custom_components` directory (folder) there, you need to create it.
