@@ -43,7 +43,6 @@ Platform | Description
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Fresh Intellivent Sky"
 8. The integration will scan for fans and then ask for your authcode. (Todo how to get authcode)
 
-Using your HA configuration directory (folder) as a starting point you should now also have this:
 
 ## Configuration is done in the UI
 
