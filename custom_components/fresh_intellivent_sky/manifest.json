@@ -2,7 +2,7 @@
   "domain": "fresh_intellivent_sky",
   "name": "Fresh Intellivent Sky",
   "config_flow": true,
-  "documentation": "https://www.home-assistant.io/integrations/fresh_intellivent_sky",
+  "documentation": "https://github.com/angoyd/freshintelliventHacs",
   "requirements": ["pyfreshintellivent==0.1.1"],
   "codeowners": ["@LaStrada"],
   "iot_class": "local_polling",
