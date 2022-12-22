@@ -3,26 +3,21 @@ from __future__ import annotations
 
 import logging
 
-from pyfreshintellivent import FreshIntelliVent
-from pyfreshintellivent.helpers import DETECTION_HIGH, DETECTION_LOW, DETECTION_MEDIUM
-
-from homeassistant.components.select import SelectEntity, SelectEntityDescription
+from homeassistant.components.select import (SelectEntity,
+                                             SelectEntityDescription)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+from pyfreshintellivent import FreshIntelliVent
+from pyfreshintellivent.helpers import (DETECTION_HIGH, DETECTION_LOW,
+                                        DETECTION_MEDIUM)
 
-from .const import (
-    DETECTION_OFF,
-    DOMAIN,
-    HUMIDITY_MODE_UPDATE,
-    LIGHT_AND_VOC_MODE_UPDATE,
-)
+from .const import (DETECTION_OFF, DOMAIN, HUMIDITY_MODE_UPDATE,
+                    LIGHT_AND_VOC_MODE_UPDATE)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -90,9 +85,9 @@ class FreshIntelliventSkySelect(
 
         self.device = device
 
-        name = f"{device.name}"
+        name = f"{device.manufacturer} {device.name}"
 
-        self._attr_unique_id = f"{name}_{entity_description.key}"
+        self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = EntityCategory.CONFIG
         self._keys = keys
         self._id = device.address
@@ -123,6 +118,8 @@ class FreshIntelliventSkySelect(
             return None
         value = self.coordinator.data.modes
         for key in self._keys:
+            if value.get(key) is None:
+                return None
             value = value[key]
 
         return value

@@ -3,25 +3,20 @@ from __future__ import annotations
 
 import logging
 
-from pyfreshintellivent import FreshIntelliVent
-
-from homeassistant.components.sensor import (
-    SensorDeviceClass,
-    SensorEntity,
-    SensorEntityDescription,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
+                                             SensorEntityDescription,
+                                             SensorStateClass)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, REVOLUTIONS_PER_MINUTE, UnitOfTemperature
+from homeassistant.const import (PERCENTAGE, REVOLUTIONS_PER_MINUTE,
+                                 UnitOfTemperature)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+from pyfreshintellivent import FreshIntelliVent
 
 from .const import DOMAIN
 
@@ -114,9 +109,9 @@ class FreshIntelliventSkySensor(
         super().__init__(coordinator)
         self.entity_description = entity_description
 
-        name = f"{device.name}"
+        name = f"{device.manufacturer} {device.name}"
 
-        self._attr_unique_id = f"{name}_{entity_description.key}"
+        self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = entity_category
         self._keys = keys
         self._id = device.address

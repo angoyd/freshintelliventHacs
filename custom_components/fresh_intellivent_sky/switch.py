@@ -4,18 +4,16 @@ from __future__ import annotations
 import logging
 from typing import cast
 
-from pyfreshintellivent import FreshIntelliVent
-
-from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.components.switch import (SwitchEntity,
+                                             SwitchEntityDescription)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+from pyfreshintellivent import FreshIntelliVent
 
 from .const import CONSTANT_SPEED_UPDATE, DOMAIN, ENABLED_KEY, RPM_KEY
 
@@ -67,10 +65,10 @@ class FreshIntelliventSkySwitch(
         super().__init__(coordinator)
         self.entity_description = entity_description
 
-        name = f"{device.name}"
+        name = f"{device.manufacturer} {device.name}"
 
         self.device = device
-        self._attr_unique_id = f"{name}_{entity_description.key}"
+        self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = entity_category
         self._keys = keys
         self._id = device.address
@@ -90,10 +88,13 @@ class FreshIntelliventSkySwitch(
     @property
     def is_on(self) -> bool:
         """Return the value reported by the sensor."""
+        if self._keys is None:
+            return None
         value = self.coordinator.data.modes
-        if self._keys is not None:
-            for key in self._keys:
-                value = value[key]
+        for key in self._keys:
+            if value.get(key) is None:
+                return None
+            value = value[key]
 
         return cast(bool, value)
 
