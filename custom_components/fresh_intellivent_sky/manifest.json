@@ -4,7 +4,7 @@
   "config_flow": true,
   "documentation": "https://github.com/angoyd/freshintelliventHacs",
   "requirements": ["pyfreshintellivent==0.1.1"],
-  "codeowners": ["@LaStrada"],
+  "codeowners": ["@LaStrada", "@angoyd"],
   "iot_class": "local_polling",
   "loggers": ["bleak", "pyfreshintellivent"],
   "dependencies": ["bluetooth"],
