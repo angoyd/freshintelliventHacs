@@ -32,7 +32,7 @@
                 "title" : "Settings",
                 "description": "Options for fan",
                 "data" : {
-                    "scan_interval" : "Interval colleting status from fan (seconds)"
+                    "scan_interval" : "Interval collecting status from fan (seconds)"
                 }
             }
         }

@@ -71,7 +71,9 @@ async def async_setup_entry(
                 coordinator,
                 coordinator.data,
                 SensorEntityDescription(
-                    key="mode", name="Mode", state_class=SensorStateClass.MEASUREMENT
+                    key="mode",
+                    name="Mode",
+                    state_class=SensorStateClass.MEASUREMENT,
                 ),
             ),
             FreshIntelliventSkySensor(
