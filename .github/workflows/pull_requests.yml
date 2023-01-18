@@ -1,6 +1,6 @@
 name: Pull requests
 
-on: pull_requests
+on: pull_request
 
 concurrency:
   group: pull-requests-${{ github.ref }}
