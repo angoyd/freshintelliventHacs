@@ -1,0 +1,22 @@
+name: Pull requests
+
+on: pull_requests
+
+concurrency:
+  group: pull-requests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Clone repo"
+        uses: actions/checkout@v3
+
+      - name: Run linters
+        uses: wearerequired/lint-action@v2
+        with:
+          auto_fix: false
+          black: true
+          flake8: true
