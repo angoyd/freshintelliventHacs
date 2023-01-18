@@ -14,6 +14,14 @@ jobs:
       - name: "Clone repo"
         uses: actions/checkout@v3
 
+      - name: "Set up Python"
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.10
+
+      - name: "Install Python dependencies"
+        run: pip install black flake8
+
       - name: "Run linters"
         uses: wearerequired/lint-action@v2
         with:
