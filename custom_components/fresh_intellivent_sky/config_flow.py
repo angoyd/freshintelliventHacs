@@ -61,26 +61,32 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         if ble_device is None:
             raise FreshIntelliventSkyDeviceUpdateError("No ble_device")
 
-        device = FreshIntelliVent()
+        client = FreshIntelliVent()
+
+        error = None
 
         try:
-            async with device.connect(ble_device, 30.0) as client:
-                await client.fetch_device_information()
+            await client.connect(ble_device, 30.0)
+            await client.fetch_device_information()
         except BleakError as err:
             _LOGGER.error(
                 "Error connecting to and getting data from %s: %s",
                 discovery_info.address,
                 err,
             )
-            raise FreshIntelliventSkyDeviceUpdateError(
-                "Failed getting device data"
-            ) from err
+            error = FreshIntelliventSkyDeviceUpdateError("Failed getting device data")
         except Exception as err:
             _LOGGER.error(
                 "Unknown error occurred from %s: %s", discovery_info.address, err
             )
-            raise err
-        return device
+            error = err
+        finally:
+            await client.disconnect()
+
+        if error is not None:
+            raise error
+
+        return client
 
     async def async_step_bluetooth(
         self, discovery_info: BluetoothServiceInfo

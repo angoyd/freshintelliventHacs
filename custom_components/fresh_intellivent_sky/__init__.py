@@ -77,28 +77,29 @@ async def async_setup_entry(
     async def _async_update_method():
         """Get data from Fresh Intellivent Sky."""
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
-        fresh = FreshIntelliVent()
+        client = FreshIntelliVent()
 
-        attempts = 0
-        while attempts < MAX_ATTEMPTS:
-            try:
-                async with fresh.connect(ble_device, TIMEOUT) as client:
-                    if auth_key is not None:
-                        await client.authenticate(authentication_code=auth_key)
-                    await client.fetch_sensor_data()
-                    await client.fetch_device_information()
+        error = None
 
-                    updates = FetchAndUpdate(hass=hass, client=client)
-                    await updates.update_all()
+        try:
+            await client.connect(ble_device, TIMEOUT)
+            if auth_key is not None:
+                await client.authenticate(authentication_code=auth_key)
+            await client.fetch_sensor_data()
+            await client.fetch_device_information()
 
-            except Exception as err:  # pylint: disable=broad-except
-                _LOGGER.warning("Failed to fetch data: %s", err)
-                if attempts > MAX_ATTEMPTS:
-                    raise UpdateFailed(f"Unable to fetch data: {err}") from err
-                attempts += 1
-                _LOGGER.warning("Retry, attempt number %s / %s", attempts, MAX_ATTEMPTS)
+            updates = FetchAndUpdate(hass=hass, client=client)
+            await updates.update_all()
 
-        return fresh
+        except Exception as err:  # pylint: disable=broad-except
+            error = UpdateFailed(f"Unable to fetch data: {err}")
+        finally:
+            await client.disconnect()
+
+        if error is not None:
+            raise error
+
+        return client
 
     coordinator = DataUpdateCoordinator(
         hass,
