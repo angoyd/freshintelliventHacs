@@ -5,23 +5,21 @@ import dataclasses
 import logging
 from typing import Any, Dict, cast
 
+import voluptuous as vol
 from bleak import BleakError
+from homeassistant.components import bluetooth
+from homeassistant.components.bluetooth import (BluetoothServiceInfo,
+                                                async_discovered_service_info)
+from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
+from homeassistant.const import CONF_ADDRESS
+from homeassistant.core import callback
+from homeassistant.data_entry_flow import FlowResult
 from pyfreshintellivent import FreshIntelliVent
 from pyfreshintellivent.helpers import validated_authentication_code
-import voluptuous as vol
 from voluptuous.validators import All, Range
 
-from homeassistant.components import bluetooth
-from homeassistant.components.bluetooth import (
-    BluetoothServiceInfo,
-    async_discovered_service_info,
-)
-from homeassistant.config_entries import ConfigFlow, ConfigEntry, OptionsFlow
-from homeassistant.const import CONF_ADDRESS
-from homeassistant.data_entry_flow import FlowResult
-from homeassistant.core import callback
-
-from .const import CONF_AUTH_KEY, DOMAIN, NAME, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+from .const import (CONF_AUTH_KEY, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL,
+                    DOMAIN, NAME)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -63,26 +61,32 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         if ble_device is None:
             raise FreshIntelliventSkyDeviceUpdateError("No ble_device")
 
-        device = FreshIntelliVent()
+        client = FreshIntelliVent()
+
+        error = None
 
         try:
-            async with device.connect(ble_device) as client:
-                await client.fetch_device_information()
+            await client.connect(ble_device, 30.0)
+            await client.fetch_device_information()
         except BleakError as err:
             _LOGGER.error(
                 "Error connecting to and getting data from %s: %s",
                 discovery_info.address,
                 err,
             )
-            raise FreshIntelliventSkyDeviceUpdateError(
-                "Failed getting device data"
-            ) from err
+            error = FreshIntelliventSkyDeviceUpdateError("Failed getting device data")
         except Exception as err:
             _LOGGER.error(
                 "Unknown error occurred from %s: %s", discovery_info.address, err
             )
-            raise err
-        return device
+            error = err
+        finally:
+            await client.disconnect()
+
+        if error is not None:
+            raise error
+
+        return client
 
     async def async_step_bluetooth(
         self, discovery_info: BluetoothServiceInfo

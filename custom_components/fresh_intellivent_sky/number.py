@@ -3,32 +3,21 @@ from __future__ import annotations
 
 import logging
 
-from pyfreshintellivent import FreshIntelliVent
-
-from homeassistant.components.number import NumberEntity, NumberEntityDescription
+from homeassistant.components.number import (NumberEntity,
+                                             NumberEntityDescription)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import REVOLUTIONS_PER_MINUTE, TIME_MINUTES
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
+                                                      DataUpdateCoordinator)
+from pyfreshintellivent import FreshIntelliVent
 
-from .const import (
-    AIRING_MODE_UPDATE,
-    CONSTANT_SPEED_UPDATE,
-    DELAY_KEY,
-    DETECTION_KEY,
-    DOMAIN,
-    ENABLED_KEY,
-    HUMIDITY_MODE_UPDATE,
-    MINUTES_KEY,
-    RPM_KEY,
-    TIMER_MODE_UPDATE,
-)
+from .const import (AIRING_MODE_UPDATE, CONSTANT_SPEED_UPDATE, DELAY_KEY,
+                    DETECTION_KEY, DOMAIN, ENABLED_KEY, HUMIDITY_MODE_UPDATE,
+                    MINUTES_KEY, RPM_KEY, TIMER_MODE_UPDATE)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -166,10 +155,10 @@ class FreshIntelliventSkyNumber(
         super().__init__(coordinator)
         self.entity_description = entity_description
 
-        name = f"{device.name}"
+        name = f"{device.manufacturer} {device.name}"
 
         self.device = device
-        self._attr_unique_id = f"{name}_{entity_description.key}"
+        self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = entity_category
         self._keys = keys
         self._id = device.address
@@ -193,6 +182,8 @@ class FreshIntelliventSkyNumber(
             return None
         value = self.coordinator.data.modes
         for key in self._keys:
+            if value.get(key) is None:
+                return None
             value = value[key]
 
         return value
