@@ -1,0 +1,42 @@
+name: Pull requests
+
+on: pull_request
+
+concurrency:
+  group: pull-requests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: "Linting"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Clone repo"
+        uses: actions/checkout@v3
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: "Install Python dependencies"
+        run: pip install black flake8
+
+      - name: "Run linters"
+        uses: wearerequired/lint-action@v2
+        with:
+          auto_fix: false
+          black: true
+          flake8: true
+
+  validate:
+    name: "Validate hacs"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Clone repo"
+        uses: actions/checkout@v3
+
+      - name: "HACS validation"
+        uses: hacs/action@main
+        with:
+          category: "integration"
