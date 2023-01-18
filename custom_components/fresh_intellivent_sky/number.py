@@ -6,7 +6,7 @@ import logging
 from homeassistant.components.number import (NumberEntity,
                                              NumberEntityDescription)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import REVOLUTIONS_PER_MINUTE, TIME_MINUTES
+from homeassistant.const import REVOLUTIONS_PER_MINUTE, UnitOfTime
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
@@ -85,7 +85,7 @@ async def async_setup_entry(
                     native_min_value=5,
                     native_max_value=120,
                     native_step=1,
-                    native_unit_of_measurement=TIME_MINUTES,
+                    native_unit_of_measurement=UnitOfTime.MINUTES,
                 ),
                 entity_category=EntityCategory.CONFIG,
                 keys=["airing", "minutes"],
@@ -113,7 +113,7 @@ async def async_setup_entry(
                     native_min_value=1,
                     native_max_value=60,
                     native_step=1,
-                    native_unit_of_measurement=TIME_MINUTES,
+                    native_unit_of_measurement=UnitOfTime.MINUTES,
                 ),
                 entity_category=EntityCategory.CONFIG,
                 keys=["timer", "minutes"],
@@ -127,7 +127,7 @@ async def async_setup_entry(
                     native_min_value=1,
                     native_max_value=60,
                     native_step=4,
-                    native_unit_of_measurement=TIME_MINUTES,
+                    native_unit_of_measurement=UnitOfTime.MINUTES,
                 ),
                 entity_category=EntityCategory.CONFIG,
                 keys=["timer", "delay", "minutes"],

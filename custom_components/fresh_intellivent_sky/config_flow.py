@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import dataclasses
 import logging
-from typing import Any, Dict, cast
+from typing import Any, cast
 
 import voluptuous as vol
 from bleak import BleakError
@@ -220,7 +220,7 @@ class FreshIntelliventSkyOptionsFlowHandler(OptionsFlow):  # type: ignore[misc]
         """Manage the options."""
         if user_input is not None:
             return cast(
-                Dict[str, Any], self.async_create_entry(title="", data=user_input)
+                dict[str, Any], self.async_create_entry(title="", data=user_input)
             )
 
         schema: dict[Any, Any] = {
@@ -234,6 +234,6 @@ class FreshIntelliventSkyOptionsFlowHandler(OptionsFlow):  # type: ignore[misc]
         }
 
         return cast(
-            Dict[str, Any],
+            dict[str, Any],
             self.async_show_form(step_id="init", data_schema=vol.Schema(schema)),
         )
