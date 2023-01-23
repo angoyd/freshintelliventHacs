@@ -8,6 +8,11 @@ DISPATCH_DETECTION = f"{DOMAIN}.detection"
 
 DEFAULT_SCAN_INTERVAL = 120
 
+AUTH_MANUAL = "auth_manual"
+AUTH_FETCH = "auth_fetch"
+NO_AUTH = "no_auth"
+
+CONF_AUTH_METHOD = "auth_method"
 CONF_AUTH_KEY = "auth_key"
 CONF_SCAN_INTERVAL = "scan_interval"
 

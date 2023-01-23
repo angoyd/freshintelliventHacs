@@ -77,12 +77,12 @@ async def async_setup_entry(
     async def _async_update_method():
         """Get data from Fresh Intellivent Sky."""
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
-        client = FreshIntelliVent()
+        client = FreshIntelliVent(ble_device=ble_device)
 
         error = None
 
         try:
-            await client.connect(ble_device, TIMEOUT)
+            await client.connect(TIMEOUT)
             if auth_key is not None:
                 await client.authenticate(authentication_code=auth_key)
             await client.fetch_sensor_data()

@@ -5,11 +5,20 @@
       "user": {
         "description": "Select device"
       },
-      "auth": {
+      "auth_method": {
+        "description": "To be able to update values you need to provide an auth key.",
+        "data": {
+          "auth_method": "Choose between manually entering auth key or automatically fetching it from the fan."
+        }
+      },
+      "auth_manual": {
         "description": "To be able to update values you need to provide an auth key.",
         "data": {
           "auth_key": "Auth key"
         }
+      },
+      "auth_fetch": {
+        "description": "Press power + WiFi buttons on the fan for 8 seconds until it starts to flash and press next.",
       },
       "bluetooth_confirm": {
         "description": "Bluetooth Confirm Description"
