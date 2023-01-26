@@ -13,10 +13,17 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
                                                       UpdateFailed)
 from pyfreshintellivent import FreshIntelliVent
 
-from .const import (AIRING_MODE_UPDATE, CONF_AUTH_KEY, CONF_SCAN_INTERVAL,
-                    CONSTANT_SPEED_UPDATE, DEFAULT_SCAN_INTERVAL, DOMAIN,
-                    HUMIDITY_MODE_UPDATE, LIGHT_AND_VOC_MODE_UPDATE,
-                    TIMER_MODE_UPDATE)
+from .const import (
+    AIRING_MODE_UPDATE, 
+    CONF_AUTH_KEY, 
+    CONF_SCAN_INTERVAL,
+    CONSTANT_SPEED_UPDATE,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    HUMIDITY_MODE_UPDATE,
+    LIGHT_AND_VOC_MODE_UPDATE,
+    TIMER_MODE_UPDATE
+    )
 from .fetch_and_update import FetchAndUpdate
 
 

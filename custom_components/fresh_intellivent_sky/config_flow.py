@@ -8,8 +8,10 @@ from typing import Any, cast
 import voluptuous as vol
 from bleak import BleakError
 from homeassistant.components import bluetooth
-from homeassistant.components.bluetooth import (BluetoothServiceInfo,
-                                                async_discovered_service_info)
+from homeassistant.components.bluetooth import (
+    BluetoothServiceInfo,
+    async_discovered_service_info
+    )
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_ADDRESS
 from homeassistant.core import callback
@@ -199,7 +201,8 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
                             NO_AUTH,
                         )
                     )
-                }),
+                }
+            ),
         )
 
     async def async_step_auth_manual(
@@ -252,7 +255,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             # TODO: Show retry button
             return await self.async_step_auth_method()
 
-        elif code == bytearray(b'\x00\x00\x00\x00'):
+        elif code == bytearray(b"\x00\x00\x00\x00"):
             _LOGGER.error(
                 "Code was only 0: %s",
                 code,
