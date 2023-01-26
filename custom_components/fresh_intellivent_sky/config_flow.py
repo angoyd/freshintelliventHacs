@@ -257,7 +257,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         finally:
             await self._discovered_device.device.disconnect()
 
-        if code == None:
+        if code is None:
             _LOGGER.error(
                 "Code was empty",
             )
