@@ -3,10 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from homeassistant.components.number import (
-    NumberEntity,
-    NumberEntityDescription
-    )
+from homeassistant.components.number import NumberEntity, NumberEntityDescription
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import REVOLUTIONS_PER_MINUTE, UnitOfTime
 from homeassistant.core import HomeAssistant
@@ -15,22 +12,22 @@ from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
-    DataUpdateCoordinator
-    )
+    DataUpdateCoordinator,
+)
 from pyfreshintellivent import FreshIntelliVent
 
 from .const import (
     AIRING_MODE_UPDATE,
-    CONSTANT_SPEED_UPDATE, 
+    CONSTANT_SPEED_UPDATE,
     DELAY_KEY,
-    DETECTION_KEY, 
-    DOMAIN, 
-    ENABLED_KEY, 
+    DETECTION_KEY,
+    DOMAIN,
+    ENABLED_KEY,
     HUMIDITY_MODE_UPDATE,
-    MINUTES_KEY, 
-    RPM_KEY, 
-    TIMER_MODE_UPDATE
-    )
+    MINUTES_KEY,
+    RPM_KEY,
+    TIMER_MODE_UPDATE,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

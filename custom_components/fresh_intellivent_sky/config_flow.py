@@ -10,8 +10,8 @@ from bleak import BleakError
 from homeassistant.components import bluetooth
 from homeassistant.components.bluetooth import (
     BluetoothServiceInfo,
-    async_discovered_service_info
-    )
+    async_discovered_service_info,
+)
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_ADDRESS
 from homeassistant.core import callback
@@ -20,8 +20,17 @@ from pyfreshintellivent import FreshIntelliVent
 from pyfreshintellivent.helpers import validated_authentication_code
 from voluptuous.validators import All, Range
 
-from .const import (CONF_AUTH_KEY, CONF_AUTH_METHOD, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL,
-                    DOMAIN, NAME, AUTH_MANUAL, AUTH_FETCH, NO_AUTH)
+from .const import (
+    CONF_AUTH_KEY,
+    CONF_AUTH_METHOD,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    NAME,
+    AUTH_MANUAL,
+    AUTH_FETCH,
+    NO_AUTH,
+)
 
 _LOGGER = logging.getLogger(__name__)
 

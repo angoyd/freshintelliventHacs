@@ -21,8 +21,8 @@ from .const import (
     DOMAIN,
     HUMIDITY_MODE_UPDATE,
     LIGHT_AND_VOC_MODE_UPDATE,
-    TIMER_MODE_UPDATE
-    )
+    TIMER_MODE_UPDATE,
+)
 from .fetch_and_update import FetchAndUpdate
 
 
