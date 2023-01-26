@@ -14,8 +14,8 @@ from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
 from pyfreshintellivent import FreshIntelliVent
 
 from .const import (
-    AIRING_MODE_UPDATE, 
-    CONF_AUTH_KEY, 
+    AIRING_MODE_UPDATE,
+    CONF_AUTH_KEY,
     CONF_SCAN_INTERVAL,
     CONSTANT_SPEED_UPDATE,
     DEFAULT_SCAN_INTERVAL,
