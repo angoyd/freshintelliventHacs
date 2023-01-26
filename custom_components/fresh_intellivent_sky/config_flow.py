@@ -30,6 +30,8 @@ from .const import (
     AUTH_MANUAL,
     AUTH_FETCH,
     NO_AUTH,
+    AUTH_CODE_ONLY_ZERO,
+    AUTH_CODE_EMPTY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -182,9 +184,12 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_auth_method(
-        self, user_input: dict[str, Any] | None = None
+        self, user_input: dict[str, Any] | None = None, error: str | None = None
     ) -> FlowResult:
         """Get auth key."""
+        errors = {}
+        if error is not None:
+            errors["base"] = error
         if user_input is not None:
             auth_method = user_input.get(CONF_AUTH_METHOD)
 
@@ -212,6 +217,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
                     )
                 }
             ),
+            errors=errors,
         )
 
     async def async_step_auth_manual(
@@ -244,7 +250,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_auth_fetch(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Fetc auth key."""
+        """Fetch auth key."""
         errors = {}
         code = None
         try:
@@ -261,16 +267,14 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             _LOGGER.error(
                 "Code was empty",
             )
-            # TODO: Show retry button
-            return await self.async_step_auth_method()
+            return await self.async_step_auth_method(error=AUTH_CODE_EMPTY)
 
         elif code == bytearray(b"\x00\x00\x00\x00"):
             _LOGGER.error(
                 "Code was only 0: %s",
                 code,
             )
-            # TODO: Show retry button
-            return await self.async_step_auth_method()
+            return await self.async_step_auth_method(error=AUTH_CODE_ONLY_ZERO)
 
         else:
             _LOGGER.error(
