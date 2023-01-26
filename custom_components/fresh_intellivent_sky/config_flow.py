@@ -263,11 +263,11 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         else:
             _LOGGER.error(
                 "Code was: %s",
-                code,
+                code.hex(),
             )
             return self.async_create_entry(
                 title=self.context["title_placeholders"]["name"],
-                data={CONF_AUTH_KEY: code},
+                data={CONF_AUTH_KEY: code.hex()},
             )
 
     @staticmethod
