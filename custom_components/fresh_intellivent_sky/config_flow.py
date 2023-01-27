@@ -190,6 +190,9 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         errors = {}
         if error is not None:
             errors["base"] = error
+            return self.async_show_form(
+                step_id="auth_method", errors=errors, last_step=False
+            )
         if user_input is not None:
             auth_method = user_input.get(CONF_AUTH_METHOD)
 
@@ -203,21 +206,8 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
                 return self.async_create_entry(
                     title=self.context["title_placeholders"]["name"],
                 )
-
-        return self.async_show_form(
-            step_id="auth_method",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_AUTH_METHOD, default=AUTH_FETCH): vol.In(
-                        (
-                            AUTH_FETCH,
-                            AUTH_MANUAL,
-                            NO_AUTH,
-                        )
-                    )
-                }
-            ),
-            errors=errors,
+        return self.async_show_menu(
+            step_id="auth_method", menu_options=[AUTH_FETCH, AUTH_MANUAL, NO_AUTH]
         )
 
     async def async_step_auth_manual(

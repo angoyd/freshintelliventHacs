@@ -8,7 +8,13 @@
       "auth_method": {
         "description": "To be able to update values you need to provide an auth key.",
         "data": {
-          "auth_method": "Choose between manually entering auth key or automatically fetching it from the fan."
+          "auth_method": "Choose between manually entering auth key or automatically fetching it from the fan.",
+          "auth_manual" : "Enter key manually"
+        },
+        "menu_options": {
+          "auth_fetch" : "Fetch key from fan",
+          "auth_manual" : "Enter key manually",
+          "no_auth" : "No auth (Only reading values)"
         }
       },
       "auth_manual": {
@@ -30,6 +36,10 @@
       "already_configured": "Already configured",
       "cannot_connect": "Couldn't connect",
       "unknown": "Unknown error"
+    },
+    "error": {
+      "auth_code_only_zero" : "Code from fan was only zeros, check that fan is in paring mode.",
+      "auth_code_empty" : "Code from fan was empty, check that fan is in paring mode and reachable."
     }
   },
   "options": {
