@@ -108,14 +108,14 @@ class FetchAndUpdate:
         light_and_voc_mode = self._hass.data.get(LIGHT_AND_VOC_MODE_UPDATE)
 
         if light_and_voc_mode is not None and self._is_authenticated is True:
-            light = light_and_voc_mode["light"]
-            voc = light_and_voc_mode["voc"]
+            light = "light_"
+            voc = "voc_"
 
             await self._client.update_light_and_voc(
-                light_enabled=bool(light[ENABLED_KEY]),
-                light_detection=light[DETECTION_KEY],
-                voc_enabled=bool(voc[ENABLED_KEY]),
-                voc_detection=voc[DETECTION_KEY],
+                light_enabled=bool(light_and_voc_mode[light + ENABLED_KEY]),
+                light_detection=light_and_voc_mode[light + DETECTION_KEY],
+                voc_enabled=bool(light_and_voc_mode[voc + ENABLED_KEY]),
+                voc_detection=light_and_voc_mode[voc + DETECTION_KEY],
             )
             _LOGGER.debug("Updated light and voc mode: %s", light_and_voc_mode)
             self._hass.data[LIGHT_AND_VOC_MODE_UPDATE] = None
