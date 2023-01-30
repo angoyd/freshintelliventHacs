@@ -102,7 +102,7 @@ async def async_setup_entry(
 
         try:
             await client.disconnect()
-        except Exception as err:   # pylint: disable=broad-except
+        except Exception as err:  # pylint: disable=broad-except
             _LOGGER.info(
                 "Couldn't disconnect",
                 address,
