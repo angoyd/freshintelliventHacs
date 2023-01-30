@@ -9,14 +9,20 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError
-from homeassistant.helpers.update_coordinator import (DataUpdateCoordinator,
-                                                      UpdateFailed)
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from pyfreshintellivent import FreshIntelliVent
 
-from .const import (AIRING_MODE_UPDATE, CONF_AUTH_KEY, CONF_SCAN_INTERVAL,
-                    CONSTANT_SPEED_UPDATE, DEFAULT_SCAN_INTERVAL, DOMAIN,
-                    HUMIDITY_MODE_UPDATE, LIGHT_AND_VOC_MODE_UPDATE,
-                    TIMER_MODE_UPDATE)
+from .const import (
+    AIRING_MODE_UPDATE,
+    CONF_AUTH_KEY,
+    CONF_SCAN_INTERVAL,
+    CONSTANT_SPEED_UPDATE,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    HUMIDITY_MODE_UPDATE,
+    LIGHT_AND_VOC_MODE_UPDATE,
+    TIMER_MODE_UPDATE,
+)
 from .fetch_and_update import FetchAndUpdate
 
 
@@ -77,12 +83,12 @@ async def async_setup_entry(
     async def _async_update_method():
         """Get data from Fresh Intellivent Sky."""
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
-        client = FreshIntelliVent()
+        client = FreshIntelliVent(ble_device=ble_device)
 
         error = None
 
         try:
-            await client.connect(ble_device, TIMEOUT)
+            await client.connect(TIMEOUT)
             if auth_key is not None:
                 await client.authenticate(authentication_code=auth_key)
             await client.fetch_sensor_data()

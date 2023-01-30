@@ -5,11 +5,26 @@
       "user": {
         "description": "Select device"
       },
-      "auth": {
+      "auth_method": {
+        "description": "To be able to update values you need to provide an auth key.",
+        "data": {
+          "auth_method": "Choose between manually entering auth key or automatically fetching it from the fan.",
+          "auth_manual" : "Enter key manually"
+        },
+        "menu_options": {
+          "auth_fetch" : "Fetch key from fan",
+          "auth_manual" : "Enter key manually",
+          "no_auth" : "No auth (Only reading values)"
+        }
+      },
+      "auth_manual": {
         "description": "To be able to update values you need to provide an auth key.",
         "data": {
           "auth_key": "Auth key"
         }
+      },
+      "auth_fetch": {
+        "description": "Press power + WiFi buttons on the fan for 8 seconds until it starts to flash and press next.",
       },
       "bluetooth_confirm": {
         "description": "Bluetooth Confirm Description"
@@ -21,6 +36,10 @@
       "already_configured": "Already configured",
       "cannot_connect": "Couldn't connect",
       "unknown": "Unknown error"
+    },
+    "error": {
+      "auth_code_only_zero" : "Code from fan was only zeros, check that fan is in paring mode.",
+      "auth_code_empty" : "Code from fan was empty, check that fan is in paring mode and reachable."
     }
   },
   "options": {

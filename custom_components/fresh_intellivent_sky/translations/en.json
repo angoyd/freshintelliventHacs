@@ -1,40 +1,58 @@
 {
     "config": {
-        "abort": {
-            "already_configured": "Device is already configured",
-            "already_in_progress": "Configuration flow is already in progress",
-            "cannot_connect": "Failed to connect",
-            "no_devices_found": "No devices found on the network",
-            "unknown": "Unexpected error"
+      "flow_title": "[%key:component::bluetooth::config::flow_title%]",
+      "step": {
+        "user": {
+          "description": "Select device"
         },
-        "flow_title": "{name}",
-        "step": {
-            "bluetooth_confirm": {
-                "description": "Do you want to setup {name}?"
-            },
-            "user": {
-                "data": {
-                    "address": "Device"
-                },
-                "description": "Choose a device to setup"
-            },
-            "auth": {
-                "data": {
-                    "auth_key": "Auth key"
-                },
-                "description": "Optional auth key. Is needed to update parameters."
-            }
+        "auth_method": {
+          "description": "To be able to update values you need to provide an auth key.",
+          "data": {
+            "auth_method": "Choose between manually entering auth key or automatically fetching it from the fan.",
+            "auth_manual" : "Enter key manually"
+          },
+          "menu_options": {
+            "auth_fetch" : "Fetch key from fan",
+            "auth_manual" : "Enter key manually",
+            "no_auth" : "No auth (Only reading values)"
+
+          }
+        },
+        "auth_manual": {
+          "description": "To be able to update values you need to provide an auth key.",
+          "data": {
+            "auth_key": "Auth key"
+          }
+        },
+        "auth_fetch": {
+          "description": "Press power + WiFi buttons on the fan for 8 seconds until it starts to flash and press next."
+        },
+        "bluetooth_confirm": {
+          "description": "Bluetooth Confirm Description"
         }
+      },
+      "abort": {
+        "no_devices_found": "No devices found",
+        "already_in_progress": "Already in progress",
+        "already_configured": "Already configured",
+        "cannot_connect": "Couldn't connect",
+        "unknown": "Unknown error"
+      },
+      "error": {
+        "auth_code_only_zero" : "Code from fan was only zeros, check that fan is in paring mode.",
+        "auth_code_empty" : "Code from fan was empty, check that fan is in paring mode and reachable."
+      }
+
     },
     "options": {
-        "step": {
-            "init": {
-                "title" : "Settings",
-                "description": "Options for fan",
-                "data" : {
-                    "scan_interval" : "Interval collecting status from fan (seconds)"
-                }
-            }
+      "step": {
+        "init": {
+          "title": "Settings",
+          "description": "Options for fan",
+          "data": {
+            "scan_interval" : "Interval colleting status from fan (seconds)"
+          }
         }
       }
-}
+    }
+  }

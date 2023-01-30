@@ -3,10 +3,20 @@ import logging
 from homeassistant.core import HomeAssistant
 from pyfreshintellivent import FreshIntelliVent
 
-from .const import (AIRING_MODE_UPDATE, BOOST_UPDATE, CONSTANT_SPEED_UPDATE,
-                    DELAY_KEY, DETECTION_KEY, ENABLED_KEY,
-                    HUMIDITY_MODE_UPDATE, LIGHT_AND_VOC_MODE_UPDATE,
-                    MINUTES_KEY, PAUSE_UPDATE, RPM_KEY, TIMER_MODE_UPDATE)
+from .const import (
+    AIRING_MODE_UPDATE,
+    BOOST_UPDATE,
+    CONSTANT_SPEED_UPDATE,
+    DELAY_KEY,
+    DETECTION_KEY,
+    ENABLED_KEY,
+    HUMIDITY_MODE_UPDATE,
+    LIGHT_AND_VOC_MODE_UPDATE,
+    MINUTES_KEY,
+    PAUSE_UPDATE,
+    RPM_KEY,
+    TIMER_MODE_UPDATE,
+)
 
 UPDATE_NEEDED = "update_needed"
 UPDATE_DONE = "update_done"

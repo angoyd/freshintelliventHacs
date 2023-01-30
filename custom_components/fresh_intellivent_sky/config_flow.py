@@ -8,8 +8,10 @@ from typing import Any, cast
 import voluptuous as vol
 from bleak import BleakError
 from homeassistant.components import bluetooth
-from homeassistant.components.bluetooth import (BluetoothServiceInfo,
-                                                async_discovered_service_info)
+from homeassistant.components.bluetooth import (
+    BluetoothServiceInfo,
+    async_discovered_service_info,
+)
 from homeassistant.config_entries import ConfigEntry, ConfigFlow, OptionsFlow
 from homeassistant.const import CONF_ADDRESS
 from homeassistant.core import callback
@@ -18,8 +20,19 @@ from pyfreshintellivent import FreshIntelliVent
 from pyfreshintellivent.helpers import validated_authentication_code
 from voluptuous.validators import All, Range
 
-from .const import (CONF_AUTH_KEY, CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL,
-                    DOMAIN, NAME)
+from .const import (
+    CONF_AUTH_KEY,
+    CONF_AUTH_METHOD,
+    CONF_SCAN_INTERVAL,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    NAME,
+    AUTH_MANUAL,
+    AUTH_FETCH,
+    NO_AUTH,
+    AUTH_CODE_ONLY_ZERO,
+    AUTH_CODE_EMPTY,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,12 +74,11 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         if ble_device is None:
             raise FreshIntelliventSkyDeviceUpdateError("No ble_device")
 
-        client = FreshIntelliVent()
-
+        client = FreshIntelliVent(ble_device=ble_device)
         error = None
 
         try:
-            await client.connect(ble_device, 30.0)
+            await client.connect(timeout=30.0)
             await client.fetch_device_information()
         except BleakError as err:
             _LOGGER.error(
@@ -120,7 +132,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
                 description_placeholders=self.context["title_placeholders"],
             )
 
-        return await self.async_step_auth()
+        return await self.async_step_auth_method()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
@@ -137,7 +149,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             }
             self._discovered_device = discovery
 
-            return await self.async_step_auth()
+            return await self.async_step_auth_method()
 
         current_addresses = self._async_current_ids()
         for discovery_info in async_discovered_service_info(self.hass):
@@ -171,10 +183,37 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             ),
         )
 
-    async def async_step_auth(
-        self, user_input: dict[str, Any] | None = None
+    async def async_step_auth_method(
+        self, user_input: dict[str, Any] | None = None, error: str | None = None
     ) -> FlowResult:
         """Get auth key."""
+        errors = {}
+        if error is not None:
+            errors["base"] = error
+            return self.async_show_form(
+                step_id="auth_method", errors=errors, last_step=False
+            )
+        if user_input is not None:
+            auth_method = user_input.get(CONF_AUTH_METHOD)
+
+            if auth_method == AUTH_MANUAL:
+                return await self.async_step_auth_manual()
+
+            elif auth_method == AUTH_FETCH:
+                return await self.async_step_auth_fetch()
+
+            elif auth_method == NO_AUTH:
+                return self.async_create_entry(
+                    title=self.context["title_placeholders"]["name"],
+                )
+        return self.async_show_menu(
+            step_id="auth_method", menu_options=[AUTH_FETCH, AUTH_MANUAL, NO_AUTH]
+        )
+
+    async def async_step_auth_manual(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Write auth key."""
         errors = {}
         if user_input is not None:
             auth_key = user_input.get(CONF_AUTH_KEY)
@@ -192,11 +231,50 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
                 )
 
         return self.async_show_form(
-            step_id="auth",
+            step_id="auth_manual",
             description_placeholders=self.context["title_placeholders"],
             data_schema=vol.Schema({vol.Optional(CONF_AUTH_KEY): str}),
             errors=errors,
         )
+
+    async def async_step_auth_fetch(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Fetch auth key."""
+        errors = {}
+        code = None
+        try:
+            await self._discovered_device.device.connect(timeout=30.0)
+            code = await self._discovered_device.device.fetch_authentication_code()
+            code = validated_authentication_code(code)
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.debug(err)
+            errors["base"] = err
+        finally:
+            await self._discovered_device.device.disconnect()
+
+        if code is None:
+            _LOGGER.error(
+                "Code was empty",
+            )
+            return await self.async_step_auth_method(error=AUTH_CODE_EMPTY)
+
+        elif code == bytearray(b"\x00\x00\x00\x00"):
+            _LOGGER.error(
+                "Code was only 0: %s",
+                code,
+            )
+            return await self.async_step_auth_method(error=AUTH_CODE_ONLY_ZERO)
+
+        else:
+            _LOGGER.error(
+                "Code was: %s",
+                code.hex(),
+            )
+            return self.async_create_entry(
+                title=self.context["title_placeholders"]["name"],
+                data={CONF_AUTH_KEY: code.hex()},
+            )
 
     @staticmethod
     @callback

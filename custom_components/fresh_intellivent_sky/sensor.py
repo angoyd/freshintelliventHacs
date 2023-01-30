@@ -3,19 +3,23 @@ from __future__ import annotations
 
 import logging
 
-from homeassistant.components.sensor import (SensorDeviceClass, SensorEntity,
-                                             SensorEntityDescription,
-                                             SensorStateClass)
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorEntityDescription,
+    SensorStateClass,
+)
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import (PERCENTAGE, REVOLUTIONS_PER_MINUTE,
-                                 UnitOfTemperature)
+from homeassistant.const import PERCENTAGE, REVOLUTIONS_PER_MINUTE, UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import StateType
-from homeassistant.helpers.update_coordinator import (CoordinatorEntity,
-                                                      DataUpdateCoordinator)
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+)
 from pyfreshintellivent import FreshIntelliVent
 
 from .const import DOMAIN
@@ -124,6 +128,7 @@ class FreshIntelliventSkySensor(
             },
             name=name,
             manufacturer=device.manufacturer,
+            model=device.model,
             hw_version=device.hw_version,
             sw_version=device.fw_version,
         )
