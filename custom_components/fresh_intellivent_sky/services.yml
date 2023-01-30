@@ -1,0 +1,46 @@
+pause:
+  name: Pause
+  description: Activate pause
+  target:
+  fields:
+    enabled:
+      name: Pause enabled
+      required: true
+      example: true
+      default: true
+    minutes:
+      name: Minutes
+      description: How many minutes the fan should be paused
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0
+          max: 60
+
+boost:
+  name: Boost
+  description: Activate boost
+  target:
+  fields:
+    enabled:
+      name: Boost enabled
+      required: true
+      example: true
+      default: true
+    seconds:
+      name: Minutes
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0
+          max: 600
+    rpm:
+      name: RPM
+      required: true
+      example: 2400
+      selector:
+        number:
+          min: 800
+          max: 2400
