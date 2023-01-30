@@ -104,6 +104,7 @@ class FreshIntelliventSkySelect(
             },
             name=name,
             manufacturer=device.manufacturer,
+            model=device.model,
             hw_version=device.hw_version,
             sw_version=device.fw_version,
         )
