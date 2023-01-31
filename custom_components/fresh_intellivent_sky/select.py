@@ -21,6 +21,7 @@ from .const import (
     DOMAIN,
     HUMIDITY_MODE_UPDATE,
     LIGHT_AND_VOC_MODE_UPDATE,
+    DETECTION_KEY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -45,7 +46,7 @@ async def async_setup_entry(
                     key="humidity_detection",
                     name="Humidity detection",
                 ),
-                keys=["humidity", "detection"],
+                keys=["humidity", DETECTION_KEY],
             ),
             FreshIntelliventSkySelect(
                 coordinator,
@@ -54,7 +55,7 @@ async def async_setup_entry(
                     key="light_detection",
                     name="Light detection",
                 ),
-                keys=["light_and_voc", "light", "detection"],
+                keys=["light_and_voc", "light", DETECTION_KEY],
             ),
             FreshIntelliventSkySelect(
                 coordinator,
@@ -63,7 +64,7 @@ async def async_setup_entry(
                     key="voc_detection",
                     name="VOC detection",
                 ),
-                keys=["light_and_voc", "voc", "detection"],
+                keys=["light_and_voc", "voc", DETECTION_KEY],
             ),
         ]
     )
