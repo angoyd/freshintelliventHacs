@@ -161,7 +161,7 @@ class FreshIntelliventSkyNumber(
         entity_category: EntityCategory | None = None,
         keys: list | None = None,
     ) -> None:
-        """Populate the airthings entity with relevant data."""
+        """Populate the entity with relevant data."""
         super().__init__(coordinator)
         self.entity_description = entity_description
 
