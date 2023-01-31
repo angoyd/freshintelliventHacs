@@ -22,7 +22,6 @@ from voluptuous.validators import All, Range
 
 from .const import (
     CONF_AUTH_KEY,
-    CONF_AUTH_METHOD,
     CONF_SCAN_INTERVAL,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,

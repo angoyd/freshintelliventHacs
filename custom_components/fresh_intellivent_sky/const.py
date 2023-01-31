@@ -14,7 +14,6 @@ NO_AUTH = "no_auth"
 AUTH_CODE_ONLY_ZERO = "auth_code_only_zero"
 AUTH_CODE_EMPTY = "auth_code_empty"
 
-CONF_AUTH_METHOD = "auth_method"
 CONF_AUTH_KEY = "auth_key"
 CONF_SCAN_INTERVAL = "scan_interval"
 
