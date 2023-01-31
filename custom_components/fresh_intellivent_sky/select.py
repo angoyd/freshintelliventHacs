@@ -22,6 +22,7 @@ from .const import (
     HUMIDITY_MODE_UPDATE,
     LIGHT_AND_VOC_MODE_UPDATE,
     DETECTION_KEY,
+    ENABLED_KEY,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -143,12 +144,12 @@ class FreshIntelliventSkySelect(
             }
         else:
             light = self.device.modes["light_and_voc"]["light"]
-            light_detection = light["detection"]
-            light_enabled = light["enabled"]
+            light_enabled = light[ENABLED_KEY]
+            light_detection = light[DETECTION_KEY]
 
             voc = self.device.modes["light_and_voc"]["voc"]
-            voc_enabled = voc["enabled"]
-            voc_detection = voc["detection"]
+            voc_enabled = voc[ENABLED_KEY]
+            voc_detection = voc[DETECTION_KEY]
 
             if key == "light_detection":
                 light_enabled = enabled
