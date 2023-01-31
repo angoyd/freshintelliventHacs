@@ -99,8 +99,15 @@ async def async_setup_entry(
 
         except Exception as err:  # pylint: disable=broad-except
             error = UpdateFailed(f"Unable to fetch data: {err}")
-        finally:
+
+        try:
             await client.disconnect()
+        except Exception as err:  # pylint: disable=broad-except
+            _LOGGER.info(
+                "Couldn't disconnect",
+                address,
+                err,
+            )
 
         if error is not None:
             raise error
