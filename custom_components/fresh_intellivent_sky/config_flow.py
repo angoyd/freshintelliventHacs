@@ -203,6 +203,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         """No auth key."""
         return self.async_create_entry(
             title=self.context["title_placeholders"]["name"],
+            data={},
         )
 
     async def async_step_auth_manual(
