@@ -49,7 +49,7 @@ class FetchAndUpdate:
                 rpm=boost[RPM_KEY],
                 seconds=boost[MINUTES_KEY],
             )
-            _LOGGER.debug("Updated constant speed")
+            _LOGGER.debug("Updated boost: %s", boost)
             self._hass.data[BOOST_UPDATE] = None
 
     async def _update_pause(self):
