@@ -193,21 +193,16 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_show_form(
                 step_id="auth_method", errors=errors, last_step=False
             )
-        if user_input is not None:
-            auth_method = user_input.get(CONF_AUTH_METHOD)
-
-            if auth_method == AUTH_MANUAL:
-                return await self.async_step_auth_manual()
-
-            elif auth_method == AUTH_FETCH:
-                return await self.async_step_auth_fetch()
-
-            elif auth_method == NO_AUTH:
-                return self.async_create_entry(
-                    title=self.context["title_placeholders"]["name"],
-                )
         return self.async_show_menu(
             step_id="auth_method", menu_options=[AUTH_FETCH, AUTH_MANUAL, NO_AUTH]
+        )
+
+    async def async_step_no_auth(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """No auth key."""
+        return self.async_create_entry(
+            title=self.context["title_placeholders"]["name"],
         )
 
     async def async_step_auth_manual(
