@@ -133,8 +133,9 @@ class FreshIntelliventSkySelect(
     async def async_select_option(self, option: str) -> None:
         """Set the option."""
         enabled = option == DETECTION_OFF
+        key = self.entity_description.key
 
-        if self.entity_description.key == "humidity_detection":
+        if key == "humidity_detection":
             self.coordinator.hass.data[HUMIDITY_MODE_UPDATE] = {
                 "enabled": enabled,
                 "detection": option,
@@ -149,7 +150,7 @@ class FreshIntelliventSkySelect(
             voc_enabled = voc["enabled"]
             voc_detection = voc["detection"]
 
-            if self.entity_description.key == "light_detection":
+            if key == "light_detection":
                 light_enabled = enabled
 
                 # Detection `off` is not supported. Use `enabled=false` instead.
