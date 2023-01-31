@@ -220,12 +220,6 @@ class FreshIntelliventSkyNumber(
                 MINUTES_KEY: self.device.modes["airing"][MINUTES_KEY],
                 RPM_KEY: int(value),
             }
-        elif key == "airing_rpm":
-            self.coordinator.hass.data[AIRING_MODE_UPDATE] = {
-                ENABLED_KEY: self.device.modes["airing"][ENABLED_KEY],
-                MINUTES_KEY: self.device.modes["airing"][MINUTES_KEY],
-                RPM_KEY: int(value),
-            }
         elif key == "airing_minutes":
             self.coordinator.hass.data[AIRING_MODE_UPDATE] = {
                 ENABLED_KEY: self.device.modes["airing"][ENABLED_KEY],
