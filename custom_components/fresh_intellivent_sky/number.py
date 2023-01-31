@@ -134,9 +134,9 @@ async def async_setup_entry(
                 NumberEntityDescription(
                     key="timer_delay_minutes",
                     name="Timer delay minutes",
-                    native_min_value=1,
-                    native_max_value=60,
-                    native_step=4,
+                    native_min_value=0,
+                    native_max_value=10,
+                    native_step=1,
                     native_unit_of_measurement=UnitOfTime.MINUTES,
                 ),
                 entity_category=EntityCategory.CONFIG,
