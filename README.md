@@ -29,7 +29,7 @@ Platform | Description
 7. Click the new repository, and click download
 8. Restart Home Assistant
 9. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Fresh Intellivent Sky"
-10. The integration will scan for fans and then ask for your authcode. (Todo how to get authcode)
+10. The integration will scan for fans and then ask for your authcode.
 
 
 ## Manual Installation
@@ -41,7 +41,7 @@ Platform | Description
 5. Place the files you downloaded in the new directory (folder) you created.
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Fresh Intellivent Sky"
-8. The integration will scan for fans and then ask for your authcode. (Todo how to get authcode)
+8. The integration will scan for fans and then ask for your authcode.
 
 
 ## Configuration is done in the UI
