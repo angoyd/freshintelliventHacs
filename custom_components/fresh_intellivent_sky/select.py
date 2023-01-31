@@ -127,20 +127,35 @@ class FreshIntelliventSkySelect(
         for key in self._keys:
             if value.get(key) is None:
                 return None
+            if key == DETECTION_KEY and value[ENABLED_KEY] == DETECTION_OFF:
+                # pyfreshintellivent doesn't support 'off'.
+                # Need to check the enabled key as well to see if the mode is 'off'.
+                return DETECTION_OFF
             value = value[key]
 
         return value
 
+    def _detection_off_check(self, new_value: str, previous_value: str) -> str:
+        """Detection `off` is not supported. Use `enabled=false` instead.
+        # We can reuse the last option to fix this."""
+        _LOGGER.debug("new_value: %s, previous_value: %s", new_value, previous_value)
+        if new_value != DETECTION_OFF:
+            return new_value
+        return previous_value
+
     async def async_select_option(self, option: str) -> None:
         """Set the option."""
-        enabled = option == DETECTION_OFF
         key = self.entity_description.key
+        enabled = option != DETECTION_OFF
 
         if key == "humidity_detection":
+            humidity = self.device.modes["humidity"]
+            detection = self._detection_off_check(new_value=option, previous_value=humidity[DETECTION_KEY])
+
             self.coordinator.hass.data[HUMIDITY_MODE_UPDATE] = {
                 "enabled": enabled,
-                "detection": option,
-                "rpm": self.device.modes["humidity"]["rpm"],
+                "detection": detection,
+                "rpm": humidity["rpm"],
             }
         else:
             light = self.device.modes["light_and_voc"]["light"]
@@ -153,18 +168,16 @@ class FreshIntelliventSkySelect(
 
             if key == "light_detection":
                 light_enabled = enabled
-
-                # Detection `off` is not supported. Use `enabled=false` instead.
-                # We can reuse the last option to fix this.
-                if option != DETECTION_OFF:
-                    light_detection = option
+                light_detection = self._detection_off_check(
+                    new_value=option,
+                    previous_value=light_detection
+                )
             else:
                 voc_enabled = enabled
-
-                # Detection `off` is not supported. Use `enabled=false` instead.
-                # We can reuse the last option to fix this.
-                if option != DETECTION_OFF:
-                    voc_detection = option
+                voc_detection = self._detection_off_check(
+                    new_value=option,
+                    previous_value=voc_detection
+                )
 
             self.coordinator.hass.data[LIGHT_AND_VOC_MODE_UPDATE] = {
                 "light_enabled": light_enabled,
