@@ -21,6 +21,7 @@ from .const import (
     DOMAIN,
     HUMIDITY_MODE_UPDATE,
     LIGHT_AND_VOC_MODE_UPDATE,
+    TIMEOUT,
     TIMER_MODE_UPDATE,
 )
 from .fetch_and_update import FetchAndUpdate
@@ -50,7 +51,6 @@ READ_ONLY_PLATFORMS = [
 ]
 
 MAX_ATTEMPTS = 5
-TIMEOUT = 30.0
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ async def async_setup_entry(
         error = None
 
         try:
-            await client.connect(TIMEOUT)
+            await client.connect(timeout=TIMEOUT)
             if auth_key is not None:
                 await client.authenticate(authentication_code=auth_key)
             await client.fetch_sensor_data()

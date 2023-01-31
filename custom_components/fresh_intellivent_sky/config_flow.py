@@ -32,6 +32,7 @@ from .const import (
     NO_AUTH,
     AUTH_CODE_ONLY_ZERO,
     AUTH_CODE_EMPTY,
+    TIMEOUT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -78,7 +79,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         error = None
 
         try:
-            await client.connect(timeout=30.0)
+            await client.connect(timeout=TIMEOUT)
             await client.fetch_device_information()
         except BleakError as err:
             _LOGGER.error(
@@ -244,7 +245,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
         errors = {}
         code = None
         try:
-            await self._discovered_device.device.connect(timeout=30.0)
+            await self._discovered_device.device.connect(timeout=TIMEOUT)
             code = await self._discovered_device.device.fetch_authentication_code()
             code = validated_authentication_code(code)
         except Exception as err:  # pylint: disable=broad-except
