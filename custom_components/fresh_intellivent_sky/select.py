@@ -142,8 +142,8 @@ class FreshIntelliventSkySelect(
             }
         else:
             light = self.device.modes["light_and_voc"]["light"]
-            light_enabled = light["enabled"]
             light_detection = light["detection"]
+            light_enabled = light["enabled"]
 
             voc = self.device.modes["light_and_voc"]["voc"]
             voc_enabled = voc["enabled"]
@@ -151,10 +151,18 @@ class FreshIntelliventSkySelect(
 
             if self.entity_description.key == "light_detection":
                 light_enabled = enabled
-                light_detection = option
+
+                # Detection `off` is not supported. Use `enabled=false` instead.
+                # We can reuse the last option to fix this.
+                if option != DETECTION_OFF:
+                    light_detection = option
             else:
                 voc_enabled = enabled
-                voc_detection = option
+
+                # Detection `off` is not supported. Use `enabled=false` instead.
+                # We can reuse the last option to fix this.
+                if option != DETECTION_OFF:
+                    voc_detection = option
 
             self.coordinator.hass.data[LIGHT_AND_VOC_MODE_UPDATE] = {
                 "light_enabled": light_enabled,
