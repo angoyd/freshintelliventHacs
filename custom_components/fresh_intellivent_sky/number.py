@@ -251,7 +251,7 @@ class FreshIntelliventSkyNumber(
                 RPM_KEY: self.device.modes["timer"][RPM_KEY],
             }
         elif key == "timer_delay_minutes":
-            delay_minutes = int(self.device.modes["timer"][RPM_KEY])
+            delay_minutes = int(value)
             delay_enabled = delay_minutes > 0
 
             self.coordinator.hass.data[TIMER_MODE_UPDATE] = {
