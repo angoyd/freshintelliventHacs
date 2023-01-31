@@ -150,7 +150,9 @@ class FreshIntelliventSkySelect(
 
         if key == "humidity_detection":
             humidity = self.device.modes["humidity"]
-            detection = self._detection_off_check(new_value=option, previous_value=humidity[DETECTION_KEY])
+            detection = self._detection_off_check(
+                new_value=option, previous_value=humidity[DETECTION_KEY]
+            )
 
             self.coordinator.hass.data[HUMIDITY_MODE_UPDATE] = {
                 "enabled": enabled,
@@ -169,14 +171,12 @@ class FreshIntelliventSkySelect(
             if key == "light_detection":
                 light_enabled = enabled
                 light_detection = self._detection_off_check(
-                    new_value=option,
-                    previous_value=light_detection
+                    new_value=option, previous_value=light_detection
                 )
             else:
                 voc_enabled = enabled
                 voc_detection = self._detection_off_check(
-                    new_value=option,
-                    previous_value=voc_detection
+                    new_value=option, previous_value=voc_detection
                 )
 
             self.coordinator.hass.data[LIGHT_AND_VOC_MODE_UPDATE] = {
