@@ -267,7 +267,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             return await self.async_step_auth_method(error=AUTH_CODE_ONLY_ZERO)
 
         else:
-            _LOGGER.error(
+            _LOGGER.debug(
                 "Code was: %s",
                 code.hex(),
             )
