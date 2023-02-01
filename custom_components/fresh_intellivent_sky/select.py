@@ -138,7 +138,6 @@ class FreshIntelliventSkySelect(
     def _detection_off_check(self, new_value: str, previous_value: str) -> str:
         """Detection `off` is not supported. Use `enabled=false` instead.
         # We can reuse the last option to fix this."""
-        _LOGGER.debug("new_value: %s, previous_value: %s", new_value, previous_value)
         if new_value != DETECTION_OFF:
             return new_value
         return previous_value
