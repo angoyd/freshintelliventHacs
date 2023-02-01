@@ -7,6 +7,7 @@ NAME = "Intellivent SKY"
 DISPATCH_DETECTION = f"{DOMAIN}.detection"
 
 DEFAULT_SCAN_INTERVAL = 120
+TIMEOUT = 30.0
 
 AUTH_MANUAL = "auth_manual"
 AUTH_FETCH = "auth_fetch"

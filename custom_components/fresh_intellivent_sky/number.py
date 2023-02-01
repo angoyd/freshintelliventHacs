@@ -161,7 +161,7 @@ class FreshIntelliventSkyNumber(
         entity_category: EntityCategory | None = None,
         keys: list | None = None,
     ) -> None:
-        """Populate the airthings entity with relevant data."""
+        """Populate the entity with relevant data."""
         super().__init__(coordinator)
         self.entity_description = entity_description
 
@@ -212,12 +212,6 @@ class FreshIntelliventSkyNumber(
         elif key == "constant_speed_rpm":
             self.coordinator.hass.data[CONSTANT_SPEED_UPDATE] = {
                 ENABLED_KEY: self.device.modes["constant_speed"][ENABLED_KEY],
-                RPM_KEY: int(value),
-            }
-        elif key == "airing_rpm":
-            self.coordinator.hass.data[AIRING_MODE_UPDATE] = {
-                ENABLED_KEY: self.device.modes["airing"][ENABLED_KEY],
-                MINUTES_KEY: self.device.modes["airing"][MINUTES_KEY],
                 RPM_KEY: int(value),
             }
         elif key == "airing_rpm":
