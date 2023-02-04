@@ -69,6 +69,9 @@ async def async_setup_entry(
         hass.data[update] = None
 
     ble_device = bluetooth.async_ble_device_from_address(hass, address)
+    if ble_device is None:
+        return False
+
     auth_key = entry.data.get(CONF_AUTH_KEY)
     scan_interval = entry.options.get(CONF_SCAN_INTERVAL)
 
@@ -83,6 +86,9 @@ async def async_setup_entry(
     async def _async_update_method():
         """Get data from Fresh Intellivent Sky."""
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
+        if ble_device is None:
+            return False
+
         client = FreshIntelliVent(ble_device=ble_device)
 
         error = None
