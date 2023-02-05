@@ -50,8 +50,6 @@ READ_ONLY_PLATFORMS = [
     Platform.SENSOR,
 ]
 
-MAX_ATTEMPTS = 5
-
 _LOGGER = logging.getLogger(__name__)
 
 
