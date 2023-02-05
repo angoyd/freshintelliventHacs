@@ -91,7 +91,7 @@ async def async_setup_entry(
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
 
         if not ble_device:
-            raise UpdateFailed(f"Unable to find device: {err}") from err
+            raise UpdateFailed(f"Unable to find device: {address}")
 
         client = FreshIntelliVent(ble_device=ble_device)
 
