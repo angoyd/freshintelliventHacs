@@ -50,8 +50,6 @@ READ_ONLY_PLATFORMS = [
     Platform.SENSOR,
 ]
 
-MAX_ATTEMPTS = 5
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -69,6 +67,12 @@ async def async_setup_entry(
         hass.data[update] = None
 
     ble_device = bluetooth.async_ble_device_from_address(hass, address)
+
+    if not ble_device:
+        raise ConfigEntryNotReady(
+            f"Could not find Fresh Intellivent Sky device with address {address}"
+        )
+
     auth_key = entry.data.get(CONF_AUTH_KEY)
     scan_interval = entry.options.get(CONF_SCAN_INTERVAL)
 
@@ -83,6 +87,10 @@ async def async_setup_entry(
     async def _async_update_method():
         """Get data from Fresh Intellivent Sky."""
         ble_device = bluetooth.async_ble_device_from_address(hass, address)
+
+        if not ble_device:
+            raise UpdateFailed(f"Unable to find device: {address}")
+
         client = FreshIntelliVent(ble_device=ble_device)
 
         error = None
@@ -103,7 +111,7 @@ async def async_setup_entry(
         try:
             await client.disconnect()
         except Exception as err:  # pylint: disable=broad-except
-            _LOGGER.info(
+            _LOGGER.error(
                 "Couldn't disconnect",
                 address,
                 err,
