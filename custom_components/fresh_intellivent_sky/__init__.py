@@ -136,14 +136,12 @@ async def async_setup_entry(
 
     await coordinator.async_config_entry_first_refresh()
 
-    entry_data = coordinator
+    hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    if auth_key is not None:
-        platforms = AUTHENTICATED_PLATFORMS
-    else:
-        platforms = READ_ONLY_PLATFORMS
-
-    await hass.config_entries.async_forward_entry_setups(entry, platforms)
+    await hass.config_entries.async_forward_entry_setups(
+        entry,
+        READ_ONLY_PLATFORMS if auth_key is None else AUTHENTICATED_PLATFORMS
+    )
 
     return True
 
