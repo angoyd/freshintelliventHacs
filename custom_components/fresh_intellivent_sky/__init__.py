@@ -6,7 +6,7 @@ from datetime import timedelta
 
 from homeassistant.components import bluetooth
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import Platform
+from homeassistant.const import CONF_SCAN_INTERVAL, Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady, HomeAssistantError
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
@@ -15,7 +15,6 @@ from pyfreshintellivent import FreshIntelliVent
 from .const import (
     AIRING_MODE_UPDATE,
     CONF_AUTH_KEY,
-    CONF_SCAN_INTERVAL,
     CONSTANT_SPEED_UPDATE,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
@@ -58,6 +57,7 @@ async def async_setup_entry(
 ) -> bool:  # pyling: disable=too-many-statements
     """Set up Fresh Intellivent Sky."""
     hass.data.setdefault(DOMAIN, {})
+    entry_data = hass.data[DOMAIN].setdefault(entry.entry_id, {})
     address = entry.unique_id
 
     assert address is not None
@@ -74,10 +74,6 @@ async def async_setup_entry(
         )
 
     auth_key = entry.data.get(CONF_AUTH_KEY)
-    scan_interval = entry.options.get(CONF_SCAN_INTERVAL)
-
-    if scan_interval is None:
-        scan_interval = DEFAULT_SCAN_INTERVAL
 
     if not ble_device:
         raise ConfigEntryNotReady(
@@ -122,26 +118,38 @@ async def async_setup_entry(
 
         return client
 
+    entry_data[CONF_SCAN_INTERVAL] = entry.options.get(
+        CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+    )
+
+    entry.async_on_unload(entry.add_update_listener(update_listener))
+
     coordinator = DataUpdateCoordinator(
         hass,
         _LOGGER,
         name=DOMAIN,
         update_method=_async_update_method,
-        update_interval=timedelta(seconds=scan_interval),
+        update_interval=timedelta(
+            seconds=entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        ),
     )
 
     await coordinator.async_config_entry_first_refresh()
 
     hass.data[DOMAIN][entry.entry_id] = coordinator
 
-    if auth_key is not None:
-        platforms = AUTHENTICATED_PLATFORMS
-    else:
-        platforms = READ_ONLY_PLATFORMS
-
-    await hass.config_entries.async_forward_entry_setups(entry, platforms)
+    await hass.config_entries.async_forward_entry_setups(
+        entry,
+        READ_ONLY_PLATFORMS if auth_key is None else AUTHENTICATED_PLATFORMS
+    )
 
     return True
+
+
+async def update_listener(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
+    """Update when config_entry options update."""
+    _LOGGER.debug("Config entry was updated, rerunning setup")
+    await hass.config_entries.async_reload(config_entry.entry_id)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
