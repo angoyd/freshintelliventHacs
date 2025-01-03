@@ -2,7 +2,7 @@
 
 DOMAIN = "fresh_intellivent_sky"
 
-NAME = "Intellivent SKY"
+NAME = ["Intellivent SKY", "Intellivent ICE"]
 
 DISPATCH_DETECTION = f"{DOMAIN}.detection"
 
