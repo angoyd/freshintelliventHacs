@@ -157,7 +157,7 @@ class FreshIntelliventSkyConfigFlow(ConfigFlow, domain=DOMAIN):
             if address in current_addresses or address in self._discovered_devices:
                 continue
 
-            if discovery_info.name != NAME:
+            if discovery_info.name not in NAME:
                 continue
 
             try:
