@@ -3,7 +3,7 @@
   "name": "Fresh Intellivent Sky",
   "config_flow": true,
   "documentation": "https://github.com/angoyd/freshintelliventHacs",
-  "requirements": ["pyfreshintellivent==0.3.1"],
+  "requirements": ["pyfreshintellivent==0.3.3"],
   "codeowners": ["@LaStrada", "@angoyd"],
   "iot_class": "local_polling",
   "loggers": ["bleak", "pyfreshintellivent"],
