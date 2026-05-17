@@ -39,6 +39,7 @@ ALL_UPDATES = [
 ]
 
 AUTHENTICATED_PLATFORMS = [
+    Platform.BUTTON,
     Platform.NUMBER,
     Platform.SELECT,
     Platform.SENSOR,
