@@ -16,7 +16,17 @@ from homeassistant.helpers.update_coordinator import (
 )
 from pyfreshintellivent import FreshIntelliVent
 
-from .const import CONSTANT_SPEED_UPDATE, DOMAIN, ENABLED_KEY, RPM_KEY
+from .const import (
+    BOOST_RPM_DEFAULT,
+    BOOST_SECONDS_DEFAULT,
+    BOOST_SETTINGS,
+    BOOST_UPDATE,
+    CONSTANT_SPEED_UPDATE,
+    DOMAIN,
+    ENABLED_KEY,
+    RPM_KEY,
+    SECONDS_KEY,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +52,16 @@ async def async_setup_entry(
                 ),
                 entity_category=EntityCategory.CONFIG,
                 keys=["constant_speed", "enabled"],
+            ),
+            FreshIntelliventSkySwitch(
+                coordinator,
+                coordinator.data,
+                SwitchEntityDescription(
+                    key="boost_enabled",
+                    name="Boost",
+                    icon="mdi:fan-plus",
+                ),
+                keys=["boost", "enabled"],
             ),
         ]
     )
@@ -115,6 +135,16 @@ class FreshIntelliventSkySwitch(
             self.coordinator.hass.data[CONSTANT_SPEED_UPDATE] = {
                 ENABLED_KEY: new_value,
                 RPM_KEY: self.device.modes["constant_speed"][RPM_KEY],
+            }
+        elif key == "boost_enabled":
+            # Mirrors the official app, which always writes speed and duration
+            # along with the on/off flag.
+            settings = self.coordinator.hass.data.get(BOOST_SETTINGS) or {}
+
+            self.coordinator.hass.data[BOOST_UPDATE] = {
+                ENABLED_KEY: new_value,
+                RPM_KEY: settings.get(RPM_KEY, BOOST_RPM_DEFAULT),
+                SECONDS_KEY: settings.get(SECONDS_KEY, BOOST_SECONDS_DEFAULT),
             }
 
         await self.coordinator.async_request_refresh()

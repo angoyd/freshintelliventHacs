@@ -18,6 +18,14 @@ from pyfreshintellivent import FreshIntelliVent
 
 from .const import (
     AIRING_MODE_UPDATE,
+    BOOST_RPM_DEFAULT,
+    BOOST_RPM_MAX,
+    BOOST_RPM_MIN,
+    BOOST_SECONDS_DEFAULT,
+    BOOST_SECONDS_MAX,
+    BOOST_SECONDS_MIN,
+    BOOST_SETTINGS,
+    BOOST_UPDATE,
     CONSTANT_SPEED_UPDATE,
     DELAY_KEY,
     DETECTION_KEY,
@@ -26,6 +34,7 @@ from .const import (
     HUMIDITY_MODE_UPDATE,
     MINUTES_KEY,
     RPM_KEY,
+    SECONDS_KEY,
     TIMER_MODE_UPDATE,
 )
 
@@ -142,6 +151,34 @@ async def async_setup_entry(
                 entity_category=EntityCategory.CONFIG,
                 keys=["timer", "delay", "minutes"],
             ),
+            FreshIntelliventSkyNumber(
+                coordinator,
+                coordinator.data,
+                NumberEntityDescription(
+                    key="boost_rpm",
+                    name="Boost",
+                    native_min_value=BOOST_RPM_MIN,
+                    native_max_value=BOOST_RPM_MAX,
+                    native_step=1,
+                    native_unit_of_measurement=REVOLUTIONS_PER_MINUTE,
+                ),
+                entity_category=EntityCategory.CONFIG,
+                boost_setting=RPM_KEY,
+            ),
+            FreshIntelliventSkyNumber(
+                coordinator,
+                coordinator.data,
+                NumberEntityDescription(
+                    key="boost_seconds",
+                    name="Boost duration",
+                    native_min_value=BOOST_SECONDS_MIN,
+                    native_max_value=BOOST_SECONDS_MAX,
+                    native_step=30,
+                    native_unit_of_measurement=UnitOfTime.SECONDS,
+                ),
+                entity_category=EntityCategory.CONFIG,
+                boost_setting=SECONDS_KEY,
+            ),
         ]
     )
 
@@ -160,6 +197,7 @@ class FreshIntelliventSkyNumber(
         entity_description: NumberEntityDescription,
         entity_category: EntityCategory | None = None,
         keys: list | None = None,
+        boost_setting: str | None = None,
     ) -> None:
         """Populate the entity with relevant data."""
         super().__init__(coordinator)
@@ -171,6 +209,7 @@ class FreshIntelliventSkyNumber(
         self._attr_unique_id = f"{device.manufacturer}_{name}_{entity_description.key}"
         self._attr_entity_category = entity_category
         self._keys = keys
+        self._boost_setting = boost_setting
         self._id = device.address
         self._attr_device_info = DeviceInfo(
             connections={
@@ -189,6 +228,11 @@ class FreshIntelliventSkyNumber(
     @property
     def native_value(self) -> float | None:
         """Return the reported value."""
+        if self._boost_setting is not None:
+            # Read from the remembered configuration rather than from the fan,
+            # which reports the remaining time while a boost is running.
+            return self._boost_settings().get(self._boost_setting)
+
         if self._keys is None:
             return None
         value = self.coordinator.data.modes
@@ -199,9 +243,35 @@ class FreshIntelliventSkyNumber(
 
         return value
 
+    def _boost_settings(self) -> dict:
+        """Return the remembered boost configuration, falling back to defaults."""
+        settings = self.coordinator.hass.data.get(BOOST_SETTINGS) or {}
+
+        return {
+            RPM_KEY: settings.get(RPM_KEY, BOOST_RPM_DEFAULT),
+            SECONDS_KEY: settings.get(SECONDS_KEY, BOOST_SECONDS_DEFAULT),
+        }
+
     async def async_set_native_value(self, value: float) -> None:
         """Set value."""
         key = self.entity_description.key
+
+        if self._boost_setting is not None:
+            settings = self._boost_settings()
+            settings[self._boost_setting] = int(value)
+
+            # Write the new setting straight away so it also takes effect on a
+            # boost that is already running.
+            self.coordinator.hass.data[BOOST_UPDATE] = {
+                ENABLED_KEY: bool(
+                    self.device.modes.get("boost", {}).get(ENABLED_KEY, False)
+                ),
+                RPM_KEY: settings[RPM_KEY],
+                SECONDS_KEY: settings[SECONDS_KEY],
+            }
+
+            await self.coordinator.async_request_refresh()
+            return
 
         if key == "humidity_and_voc_rpm":
             self.coordinator.hass.data[HUMIDITY_MODE_UPDATE] = {

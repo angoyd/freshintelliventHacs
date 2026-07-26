@@ -18,6 +18,22 @@ Platform | Description
 `sensor` | Show info from blueprint API.
 `switch` | Switch something `True` or `False`.
 
+## Boost
+
+`switch.boost` runs the fan at full speed for a set time, the same as the boost
+button in the official Fresh Ventilation app. The app always boosts at 2500 RPM
+(the fan caps this at 2400) for 10 minutes; those are the defaults here too.
+
+Entity | Description
+-- | --
+`switch` "Boost" | Start/stop a boost
+`number` "Boost" | Boost fan speed, 800-2400 RPM
+`number` "Boost duration" | How long a boost runs, 60-3600 seconds
+`sensor` "Boost time remaining" | Seconds left of a running boost, 0 when idle
+
+Changing either number while a boost is running applies immediately. Requires an
+auth key — without one the integration is read-only and only the sensor appears.
+
 ## HACS Installation
 
 1. Go to HACS in Home Assistant

@@ -5,6 +5,9 @@ from pyfreshintellivent import FreshIntelliVent
 
 from .const import (
     AIRING_MODE_UPDATE,
+    BOOST_RPM_DEFAULT,
+    BOOST_SECONDS_DEFAULT,
+    BOOST_SETTINGS,
     BOOST_UPDATE,
     CONSTANT_SPEED_UPDATE,
     DELAY_KEY,
@@ -15,6 +18,7 @@ from .const import (
     MINUTES_KEY,
     PAUSE_UPDATE,
     RPM_KEY,
+    SECONDS_KEY,
     TIMER_MODE_UPDATE,
 )
 
@@ -32,7 +36,7 @@ class FetchAndUpdate:
         self._is_authenticated = client.sensors.authenticated
 
     async def update_all(self):
-        await self._update_boost()
+        await self._fetch_and_update_boost()
         await self._update_pause()
         await self._fetch_and_update_airing()
         await self._fetch_and_update_constant_speed()
@@ -40,17 +44,47 @@ class FetchAndUpdate:
         await self._fetch_and_update_light_and_voc()
         await self._fetch_and_update_timer()
 
-    async def _update_boost(self):
+    async def _fetch_and_update_boost(self):
         boost = self._hass.data.get(BOOST_UPDATE)
 
         if boost is not None and self._is_authenticated is True:
+            rpm = int(boost[RPM_KEY])
+            seconds = int(boost[SECONDS_KEY])
+
             await self._client.update_boost(
-                enabled=boost[ENABLED_KEY],
-                rpm=boost[RPM_KEY],
-                seconds=boost[MINUTES_KEY],
+                enabled=bool(boost[ENABLED_KEY]),
+                rpm=rpm,
+                seconds=seconds,
             )
             _LOGGER.debug("Updated boost: %s", boost)
             self._hass.data[BOOST_UPDATE] = None
+            self._store_boost_settings(rpm=rpm, seconds=seconds)
+        else:
+            boost = await self._client.fetch_boost()
+            # Unlike the other fetch_* helpers, fetch_boost() does not populate
+            # modes itself, so the entities would never see the value.
+            self._client.modes["boost"] = boost
+
+            # While a boost is running the fan reports how much time is left
+            # rather than the configured duration, so only an idle reading tells
+            # us what the duration is actually set to.
+            self._store_boost_settings(
+                rpm=int(boost[RPM_KEY]),
+                seconds=None if boost[ENABLED_KEY] else int(boost[SECONDS_KEY]),
+            )
+
+    def _store_boost_settings(self, rpm: int | None = None, seconds: int | None = None):
+        settings = dict(
+            self._hass.data.get(BOOST_SETTINGS)
+            or {RPM_KEY: BOOST_RPM_DEFAULT, SECONDS_KEY: BOOST_SECONDS_DEFAULT}
+        )
+
+        if rpm is not None:
+            settings[RPM_KEY] = rpm
+        if seconds is not None:
+            settings[SECONDS_KEY] = seconds
+
+        self._hass.data[BOOST_SETTINGS] = settings
 
     async def _update_pause(self):
         pause = self._hass.data.get(PAUSE_UPDATE)

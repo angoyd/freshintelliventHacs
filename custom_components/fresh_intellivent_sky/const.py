@@ -24,6 +24,20 @@ BOOST_UPDATE = "boost_update"
 CONSTANT_SPEED_UPDATE = "constant_speed_update"
 PAUSE_UPDATE = "pause_update"
 
+# Last known boost configuration, kept separately from the reported state
+# because the fan reports the *remaining* time while a boost is running.
+BOOST_SETTINGS = "boost_settings"
+
+# Values the official app writes when the boost button is pressed. It asks for
+# 2500 RPM, which the fan (and pyfreshintellivent) clamps to the 2400 maximum.
+BOOST_RPM_DEFAULT = 2400
+BOOST_SECONDS_DEFAULT = 600
+
+BOOST_RPM_MIN = 800
+BOOST_RPM_MAX = 2400
+BOOST_SECONDS_MIN = 60
+BOOST_SECONDS_MAX = 3600
+
 AIRING_MODE_UPDATE = "airing_update"
 HUMIDITY_MODE_UPDATE = "humidity_mode_update"
 LIGHT_AND_VOC_MODE_UPDATE = "light_and_voc_mode_update"
