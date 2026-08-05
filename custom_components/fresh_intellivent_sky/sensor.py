@@ -10,7 +10,12 @@ from homeassistant.components.sensor import (
     SensorStateClass,
 )
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import PERCENTAGE, REVOLUTIONS_PER_MINUTE, UnitOfTemperature
+from homeassistant.const import (
+    PERCENTAGE,
+    REVOLUTIONS_PER_MINUTE,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.device_registry import CONNECTION_BLUETOOTH
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
@@ -89,6 +94,17 @@ async def async_setup_entry(
                 ),
                 EntityCategory.DIAGNOSTIC,
             ),
+            FreshIntelliventSkyBoostRemainingSensor(
+                coordinator,
+                coordinator.data,
+                SensorEntityDescription(
+                    device_class=SensorDeviceClass.DURATION,
+                    key="boost_seconds_remaining",
+                    name="Boost time remaining",
+                    native_unit_of_measurement=UnitOfTime.SECONDS,
+                    icon="mdi:fan-clock",
+                ),
+            ),
         ]
     )
 
@@ -136,3 +152,20 @@ class FreshIntelliventSkySensor(
     def native_value(self) -> StateType:
         """Return the value reported by the sensor."""
         return self.coordinator.data.sensors.as_dict()[self.entity_description.key]
+
+
+class FreshIntelliventSkyBoostRemainingSensor(FreshIntelliventSkySensor):
+    """Time left of a running boost."""
+
+    @property
+    def native_value(self) -> StateType:
+        """Return the seconds left, or 0 when no boost is running."""
+        boost = self.coordinator.data.modes.get("boost")
+
+        if boost is None:
+            return None
+        if not boost.get("enabled"):
+            # When idle the fan reports the configured duration, not a countdown.
+            return 0
+
+        return boost.get("seconds")

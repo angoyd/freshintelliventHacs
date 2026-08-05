@@ -14,6 +14,8 @@ from pyfreshintellivent import FreshIntelliVent
 
 from .const import (
     AIRING_MODE_UPDATE,
+    BOOST_SETTINGS,
+    BOOST_UPDATE,
     CONF_AUTH_KEY,
     CONSTANT_SPEED_UPDATE,
     DEFAULT_SCAN_INTERVAL,
@@ -31,6 +33,8 @@ class UnableToConnect(HomeAssistantError):
 
 
 ALL_UPDATES = [
+    BOOST_UPDATE,
+    BOOST_SETTINGS,
     CONSTANT_SPEED_UPDATE,
     AIRING_MODE_UPDATE,
     HUMIDITY_MODE_UPDATE,
