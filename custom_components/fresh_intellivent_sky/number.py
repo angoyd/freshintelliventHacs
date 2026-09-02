@@ -37,6 +37,7 @@ from .const import (
     SECONDS_KEY,
     TIMER_MODE_UPDATE,
 )
+from .pending_update import queue_update
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -255,6 +256,9 @@ class FreshIntelliventSkyNumber(
     async def async_set_native_value(self, value: float) -> None:
         """Set value."""
         key = self.entity_description.key
+        # The last reported state, not the client captured at setup, which is
+        # replaced by the coordinator on every refresh and never updated again.
+        modes = self.coordinator.data.modes
 
         if self._boost_setting is not None:
             settings = self._boost_settings()
@@ -262,69 +266,100 @@ class FreshIntelliventSkyNumber(
 
             # Write the new setting straight away so it also takes effect on a
             # boost that is already running.
-            self.coordinator.hass.data[BOOST_UPDATE] = {
-                ENABLED_KEY: bool(
-                    self.device.modes.get("boost", {}).get(ENABLED_KEY, False)
-                ),
-                RPM_KEY: settings[RPM_KEY],
-                SECONDS_KEY: settings[SECONDS_KEY],
-            }
+            queue_update(
+                self.coordinator.hass,
+                BOOST_UPDATE,
+                {self._boost_setting: int(value)},
+                {
+                    ENABLED_KEY: bool(modes.get("boost", {}).get(ENABLED_KEY, False)),
+                    RPM_KEY: settings[RPM_KEY],
+                    SECONDS_KEY: settings[SECONDS_KEY],
+                },
+            )
 
             await self.coordinator.async_request_refresh()
             return
 
         if key == "humidity_and_voc_rpm":
-            self.coordinator.hass.data[HUMIDITY_MODE_UPDATE] = {
-                ENABLED_KEY: self.device.modes["humidity"][ENABLED_KEY],
-                DETECTION_KEY: self.device.modes["humidity"][DETECTION_KEY],
-                RPM_KEY: int(value),
-            }
+            queue_update(
+                self.coordinator.hass,
+                HUMIDITY_MODE_UPDATE,
+                {RPM_KEY: int(value)},
+                {
+                    ENABLED_KEY: modes["humidity"][ENABLED_KEY],
+                    DETECTION_KEY: modes["humidity"][DETECTION_KEY],
+                },
+            )
         elif key == "constant_speed_rpm":
-            self.coordinator.hass.data[CONSTANT_SPEED_UPDATE] = {
-                ENABLED_KEY: self.device.modes["constant_speed"][ENABLED_KEY],
-                RPM_KEY: int(value),
-            }
+            queue_update(
+                self.coordinator.hass,
+                CONSTANT_SPEED_UPDATE,
+                {RPM_KEY: int(value)},
+                {ENABLED_KEY: modes["constant_speed"][ENABLED_KEY]},
+            )
         elif key == "airing_rpm":
-            self.coordinator.hass.data[AIRING_MODE_UPDATE] = {
-                ENABLED_KEY: self.device.modes["airing"][ENABLED_KEY],
-                MINUTES_KEY: self.device.modes["airing"][MINUTES_KEY],
-                RPM_KEY: int(value),
-            }
+            queue_update(
+                self.coordinator.hass,
+                AIRING_MODE_UPDATE,
+                {RPM_KEY: int(value)},
+                {
+                    ENABLED_KEY: modes["airing"][ENABLED_KEY],
+                    MINUTES_KEY: modes["airing"][MINUTES_KEY],
+                },
+            )
         elif key == "airing_minutes":
-            self.coordinator.hass.data[AIRING_MODE_UPDATE] = {
-                ENABLED_KEY: self.device.modes["airing"][ENABLED_KEY],
-                MINUTES_KEY: int(value),
-                RPM_KEY: self.device.modes["airing"][RPM_KEY],
-            }
+            queue_update(
+                self.coordinator.hass,
+                AIRING_MODE_UPDATE,
+                {MINUTES_KEY: int(value)},
+                {
+                    ENABLED_KEY: modes["airing"][ENABLED_KEY],
+                    RPM_KEY: modes["airing"][RPM_KEY],
+                },
+            )
         elif key == "timer_and_light_rpm":
-            self.coordinator.hass.data[TIMER_MODE_UPDATE] = {
-                MINUTES_KEY: self.device.modes["timer"][MINUTES_KEY],
-                DELAY_KEY: {
-                    ENABLED_KEY: self.device.modes["timer"][DELAY_KEY][ENABLED_KEY],
-                    MINUTES_KEY: self.device.modes["timer"][DELAY_KEY][MINUTES_KEY],
+            queue_update(
+                self.coordinator.hass,
+                TIMER_MODE_UPDATE,
+                {RPM_KEY: int(value)},
+                {
+                    MINUTES_KEY: modes["timer"][MINUTES_KEY],
+                    DELAY_KEY: {
+                        ENABLED_KEY: modes["timer"][DELAY_KEY][ENABLED_KEY],
+                        MINUTES_KEY: modes["timer"][DELAY_KEY][MINUTES_KEY],
+                    },
                 },
-                RPM_KEY: int(value),
-            }
+            )
         elif key == "timer_minutes":
-            self.coordinator.hass.data[TIMER_MODE_UPDATE] = {
-                MINUTES_KEY: int(value),
-                DELAY_KEY: {
-                    ENABLED_KEY: self.device.modes["timer"][DELAY_KEY][ENABLED_KEY],
-                    MINUTES_KEY: self.device.modes["timer"][DELAY_KEY][MINUTES_KEY],
+            queue_update(
+                self.coordinator.hass,
+                TIMER_MODE_UPDATE,
+                {MINUTES_KEY: int(value)},
+                {
+                    DELAY_KEY: {
+                        ENABLED_KEY: modes["timer"][DELAY_KEY][ENABLED_KEY],
+                        MINUTES_KEY: modes["timer"][DELAY_KEY][MINUTES_KEY],
+                    },
+                    RPM_KEY: modes["timer"][RPM_KEY],
                 },
-                RPM_KEY: self.device.modes["timer"][RPM_KEY],
-            }
+            )
         elif key == "timer_delay_minutes":
             delay_minutes = int(value)
             delay_enabled = delay_minutes > 0
 
-            self.coordinator.hass.data[TIMER_MODE_UPDATE] = {
-                MINUTES_KEY: self.device.modes["timer"][MINUTES_KEY],
-                DELAY_KEY: {
-                    ENABLED_KEY: delay_enabled,
-                    MINUTES_KEY: delay_minutes,
+            queue_update(
+                self.coordinator.hass,
+                TIMER_MODE_UPDATE,
+                {
+                    DELAY_KEY: {
+                        ENABLED_KEY: delay_enabled,
+                        MINUTES_KEY: delay_minutes,
+                    },
                 },
-                RPM_KEY: self.device.modes["timer"][RPM_KEY],
-            }
+                {
+                    MINUTES_KEY: modes["timer"][MINUTES_KEY],
+                    RPM_KEY: modes["timer"][RPM_KEY],
+                },
+            )
 
         await self.coordinator.async_request_refresh()
