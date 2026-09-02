@@ -27,6 +27,7 @@ from .const import (
     RPM_KEY,
     SECONDS_KEY,
 )
+from .pending_update import queue_update
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -132,19 +133,27 @@ class FreshIntelliventSkySwitch(
         key = self.entity_description.key
 
         if key == "constant_speed_enabled":
-            self.coordinator.hass.data[CONSTANT_SPEED_UPDATE] = {
-                ENABLED_KEY: new_value,
-                RPM_KEY: self.device.modes["constant_speed"][RPM_KEY],
-            }
+            queue_update(
+                self.coordinator.hass,
+                CONSTANT_SPEED_UPDATE,
+                {ENABLED_KEY: new_value},
+                # The last reported speed, not the one the client captured at
+                # setup happened to hold, which never changes again.
+                {RPM_KEY: self.coordinator.data.modes["constant_speed"][RPM_KEY]},
+            )
         elif key == "boost_enabled":
             # Mirrors the official app, which always writes speed and duration
             # along with the on/off flag.
             settings = self.coordinator.hass.data.get(BOOST_SETTINGS) or {}
 
-            self.coordinator.hass.data[BOOST_UPDATE] = {
-                ENABLED_KEY: new_value,
-                RPM_KEY: settings.get(RPM_KEY, BOOST_RPM_DEFAULT),
-                SECONDS_KEY: settings.get(SECONDS_KEY, BOOST_SECONDS_DEFAULT),
-            }
+            queue_update(
+                self.coordinator.hass,
+                BOOST_UPDATE,
+                {ENABLED_KEY: new_value},
+                {
+                    RPM_KEY: settings.get(RPM_KEY, BOOST_RPM_DEFAULT),
+                    SECONDS_KEY: settings.get(SECONDS_KEY, BOOST_SECONDS_DEFAULT),
+                },
+            )
 
         await self.coordinator.async_request_refresh()

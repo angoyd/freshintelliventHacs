@@ -24,6 +24,7 @@ from .const import (
     DETECTION_KEY,
     ENABLED_KEY,
 )
+from .pending_update import queue_update
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -147,42 +148,60 @@ class FreshIntelliventSkySelect(
         key = self.entity_description.key
         enabled = option != DETECTION_OFF
 
+        # The last reported state, not the client captured at setup, which is
+        # replaced by the coordinator on every refresh and never updated again.
+        modes = self.coordinator.data.modes
+
         if key == "humidity_detection":
-            humidity = self.device.modes["humidity"]
+            humidity = modes["humidity"]
             detection = self._detection_off_check(
                 new_value=option, previous_value=humidity[DETECTION_KEY]
             )
 
-            self.coordinator.hass.data[HUMIDITY_MODE_UPDATE] = {
-                "enabled": enabled,
-                "detection": detection,
-                "rpm": humidity["rpm"],
-            }
+            queue_update(
+                self.coordinator.hass,
+                HUMIDITY_MODE_UPDATE,
+                {
+                    "enabled": enabled,
+                    "detection": detection,
+                },
+                {"rpm": humidity["rpm"]},
+            )
+        elif key == "light_detection":
+            light = modes["light_and_voc"]["light"]
+            voc = modes["light_and_voc"]["voc"]
+
+            queue_update(
+                self.coordinator.hass,
+                LIGHT_AND_VOC_MODE_UPDATE,
+                {
+                    "light_enabled": enabled,
+                    "light_detection": self._detection_off_check(
+                        new_value=option, previous_value=light[DETECTION_KEY]
+                    ),
+                },
+                {
+                    "voc_enabled": voc[ENABLED_KEY],
+                    "voc_detection": voc[DETECTION_KEY],
+                },
+            )
         else:
-            light = self.device.modes["light_and_voc"]["light"]
-            light_enabled = light[ENABLED_KEY]
-            light_detection = light[DETECTION_KEY]
+            light = modes["light_and_voc"]["light"]
+            voc = modes["light_and_voc"]["voc"]
 
-            voc = self.device.modes["light_and_voc"]["voc"]
-            voc_enabled = voc[ENABLED_KEY]
-            voc_detection = voc[DETECTION_KEY]
-
-            if key == "light_detection":
-                light_enabled = enabled
-                light_detection = self._detection_off_check(
-                    new_value=option, previous_value=light_detection
-                )
-            else:
-                voc_enabled = enabled
-                voc_detection = self._detection_off_check(
-                    new_value=option, previous_value=voc_detection
-                )
-
-            self.coordinator.hass.data[LIGHT_AND_VOC_MODE_UPDATE] = {
-                "light_enabled": light_enabled,
-                "light_detection": light_detection,
-                "voc_enabled": voc_enabled,
-                "voc_detection": voc_detection,
-            }
+            queue_update(
+                self.coordinator.hass,
+                LIGHT_AND_VOC_MODE_UPDATE,
+                {
+                    "voc_enabled": enabled,
+                    "voc_detection": self._detection_off_check(
+                        new_value=option, previous_value=voc[DETECTION_KEY]
+                    ),
+                },
+                {
+                    "light_enabled": light[ENABLED_KEY],
+                    "light_detection": light[DETECTION_KEY],
+                },
+            )
 
         await self.coordinator.async_request_refresh()
