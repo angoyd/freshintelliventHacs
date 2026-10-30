@@ -1,6 +1,7 @@
 """The Fresh Intellivent Sky integration."""
 from __future__ import annotations
 
+import asyncio
 import logging
 from datetime import timedelta
 
@@ -102,8 +103,21 @@ async def async_setup_entry(
             await client.fetch_sensor_data()
             await client.fetch_device_information()
 
+            pending_write = auth_key is not None and any(
+                hass.data.get(update) is not None
+                for update in ALL_UPDATES
+                if update != BOOST_SETTINGS
+            )
+
             updates = FetchAndUpdate(hass=hass, client=client)
             await updates.update_all()
+
+            if pending_write:
+                # The status above was read before the write; read it again so
+                # mode and speed reflect the change now instead of one scan
+                # interval later.
+                await asyncio.sleep(2)
+                await client.fetch_sensor_data()
 
         except Exception as err:  # pylint: disable=broad-except
             error = UpdateFailed(f"Unable to fetch data: {err}")
