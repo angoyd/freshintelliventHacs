@@ -65,13 +65,19 @@ class FetchAndUpdate:
             # modes itself, so the entities would never see the value.
             self._client.modes["boost"] = boost
 
-            # While a boost is running the fan reports how much time is left
-            # rather than the configured duration, so only an idle reading tells
-            # us what the duration is actually set to.
-            self._store_boost_settings(
-                rpm=int(boost[RPM_KEY]),
-                seconds=None if boost[ENABLED_KEY] else int(boost[SECONDS_KEY]),
-            )
+            # Only seed the remembered settings from the fan when nothing is
+            # remembered yet (first refresh after setup). After that the
+            # user's setting wins: once a boost has ended the fan reports its
+            # default duration again, which would otherwise replace the
+            # configured duration after every boost.
+            if self._hass.data.get(BOOST_SETTINGS) is None:
+                # While a boost is running the fan reports how much time is
+                # left rather than the configured duration, so only an idle
+                # reading tells us what the duration is actually set to.
+                self._store_boost_settings(
+                    rpm=int(boost[RPM_KEY]),
+                    seconds=None if boost[ENABLED_KEY] else int(boost[SECONDS_KEY]),
+                )
 
     def _store_boost_settings(self, rpm: int | None = None, seconds: int | None = None):
         settings = dict(

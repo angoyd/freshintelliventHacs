@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import logging
 
-from homeassistant.components.number import NumberEntity, NumberEntityDescription
+from homeassistant.components.number import NumberEntityDescription, RestoreNumber
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import REVOLUTIONS_PER_MINUTE, UnitOfTime
 from homeassistant.core import HomeAssistant
@@ -184,7 +184,7 @@ async def async_setup_entry(
 
 
 class FreshIntelliventSkyNumber(
-    CoordinatorEntity[DataUpdateCoordinator[FreshIntelliVent]], NumberEntity
+    CoordinatorEntity[DataUpdateCoordinator[FreshIntelliVent]], RestoreNumber
 ):
     """Fresh Intellivent Sky numbers for the device."""
 
@@ -224,6 +224,24 @@ class FreshIntelliventSkyNumber(
             hw_version=device.hw_version,
             sw_version=device.fw_version,
         )
+
+    async def async_added_to_hass(self) -> None:
+        """Restore the configured boost settings after a restart."""
+        await super().async_added_to_hass()
+
+        if self._boost_setting is None:
+            return
+
+        # The fan only reports its default boost duration when idle, so the
+        # value the user configured is not available from the device after a
+        # restart. Take it from the last stored state instead.
+        last = await self.async_get_last_number_data()
+        if last is None or last.native_value is None:
+            return
+
+        settings = self._boost_settings()
+        settings[self._boost_setting] = int(last.native_value)
+        self.coordinator.hass.data[BOOST_SETTINGS] = settings
 
     @property
     def native_value(self) -> float | None:
